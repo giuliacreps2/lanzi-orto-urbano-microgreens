@@ -17,7 +17,7 @@ export function AudienceSection({ content }: AudienceSectionProps) {
   return (
     <section className="bg-[var(--color-brand-beige)] px-5 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
       <div className="mx-auto max-w-7xl">
-        <h2 className="mx-auto mb-8 max-w-3xl text-center font-[var(--font-serif-brand)] text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:mb-10 md:text-4xl">
+        <h2 className="mx-auto mb-8 max-w-3xl text-center section-title-black text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:mb-10 md:text-4xl">
           {content.title}
         </h2>
 
@@ -52,7 +52,7 @@ export function AudienceSection({ content }: AudienceSectionProps) {
                     card.imagePosition === "right" ? "md:order-1" : "md:order-2"
                   }`}
                 >
-                  <h3 className="font-[var(--font-serif-brand)] text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:text-4xl">
+                  <h3 className="section-title-black text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:text-4xl">
                     {card.title}
                   </h3>
 

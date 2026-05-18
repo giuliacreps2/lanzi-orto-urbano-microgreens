@@ -18,7 +18,7 @@ export function ProductCarousel({
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h2 className="font-[var(--font-serif-brand)] text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:text-4xl">
+            <h2 className="section-title-black text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:text-4xl">
               {title}
             </h2>
 

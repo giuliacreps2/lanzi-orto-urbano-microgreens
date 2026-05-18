@@ -47,8 +47,8 @@ export function Hero({ content }: HeroProps) {
 
         <div className="hero-image-wrapper">
           <Image
-            src={content.image.src}
-            alt={content.image.alt}
+            src={content.image.src }
+            alt={content.image.alt }
             fill
             priority
             className="hero-image"

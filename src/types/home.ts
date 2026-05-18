@@ -18,8 +18,8 @@ export type HeroContent = {
     highlightedTitle?: string,
     description: string,
     image: {
-        src: string,
-        alt: string,
+        src?: string,
+        alt?: string,
     };
     actions: HeroAction[];
     benefits: HeroBenefit[];
