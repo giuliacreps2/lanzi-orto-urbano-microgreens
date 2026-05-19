@@ -15,9 +15,9 @@ const audienceIcons: Record<AudienceIcon, ElementType> = {
 
 export function AudienceSection({ content }: AudienceSectionProps) {
   return (
-    <section className="bg-[var(--color-brand-beige)] px-5 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
+    <section className="bg-(--color-brand-beige) px-5 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
       <div className="mx-auto max-w-7xl">
-        <h2 className="mx-auto mb-8 max-w-3xl text-center section-title-black text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:mb-10 md:text-4xl">
+        <h2 className="mx-auto mb-8 max-w-3xl text-center section-title-black text-3xl leading-none tracking-[-0.03em] text-(--color-brand-black) md:mb-10 md:text-4xl">
           {content.title}
         </h2>
 
@@ -30,12 +30,12 @@ export function AudienceSection({ content }: AudienceSectionProps) {
                 key={card.title}
                 className="relative grid overflow-hidden rounded-[28px] border border-[rgba(184,197,168,0.65)] bg-white shadow-sm md:grid-cols-2"
               >
-                <div className="absolute left-5 top-5 z-10 flex size-12 items-center justify-center rounded-full bg-[#dfe8d3] text-[var(--color-brand-dark)] md:left-6 md:top-6">
+                <div className="absolute left-5 top-5 z-10 flex size-12 items-center justify-center rounded-full bg-[#dfe8d3] text-(--color-brand-dark) md:left-6 md:top-6">
                   <Icon size={22} strokeWidth={1.7} />
                 </div>
 
                 <div
-                  className={`relative min-h-[210px] md:min-h-[260px] ${
+                  className={`relative min-h-52.5 md:min-h-65 ${
                     card.imagePosition === "right" ? "md:order-2" : "md:order-1"
                   }`}
                 >
@@ -52,11 +52,11 @@ export function AudienceSection({ content }: AudienceSectionProps) {
                     card.imagePosition === "right" ? "md:order-1" : "md:order-2"
                   }`}
                 >
-                  <h3 className="section-title-black text-3xl leading-none tracking-[-0.03em] text-[var(--color-brand-black)] md:text-4xl">
+                  <h3 className="section-title-black text-3xl leading-none tracking-[-0.03em] text-(--color-brand-black) md:text-4xl">
                     {card.title}
                   </h3>
 
-                  <p className="mt-4 max-w-sm text-sm leading-6 text-[var(--color-brand-text)] md:text-base md:leading-7">
+                  <p className="mt-4 max-w-sm text-sm leading-6 text-(--color-brand-text) md:text-base md:leading-7">
                     {card.description}
                   </p>
 

@@ -1,6 +1,5 @@
 import type { VideoItem } from "../types/video";
 
-
 export const homeVideos: VideoItem[] = [
   {
     id: "come-nascono",

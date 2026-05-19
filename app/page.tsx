@@ -1,12 +1,12 @@
 import FormLogin from "@/src/components/login/FormLogin";
 import House from "./home/page";
-import FormLogin1 from "@/src/components/login/FormLogin1";
-
+import SignUpUser from "@/src/components/signupUser/SignUpUser";
+import SignUpB2b from "@/src/components/signupB2b/SignUpB2b";
 
 export default function Home() {
   return (
     <main>
-      <FormLogin1/>
+      <SignUpUser />
     </main>
   );
 }
