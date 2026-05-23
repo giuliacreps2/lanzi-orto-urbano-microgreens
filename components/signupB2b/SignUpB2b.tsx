@@ -1,34 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Building,
-  Building2,
-  Mail,
-  MailCheck,
-  User,
-  UserCheck,
-} from "lucide-react";
+import { Building2, MailCheck, UserCheck } from "lucide-react";
 
 const TOTAL_STEPS = 3;
 
-// Esempio dell'Enum allineato al backend Java
-const TYPE_ACTIVITY_OPTIONS = [
-  { value: "RESTAURANT", label: "Ristorante / Bistrot" },
-  { value: "CATERING", label: "Catering" },
-  { value: "RETAIL", label: "Negozio al dettaglio" },
-  { value: "GAS", label: "Gruppo d'Acquisto Solidale" },
-  { value: "OTHER", label: "Altro tipo di attività" },
-];
+export const TYPE_ACTIVITY_LABELS: Record<string, string> = {
+  FRUTTA_E_VERDURA: "Frutta e Verdura",
+  MINI_MARKET: "Mini Market",
+  NEGOZIO: "Negozio",
+  FIORERIA: "Fioreria",
+  BAR_CON_CUCINA: "Bar con Cucina",
+  BAR_SENZA_CUCINA: "Bar senza Cucina",
+  PASTICCERIA: "Pasticceria",
+  PASTICCERIA_VEGANA: "Pasticceria Vegana",
+  PASTICCERIA_VEGETARIANA: "Pasticceria Vegetariana",
+  GROSSISTI_DI_FRESCHI_E_FRESCHISSIMI: "Grossisti di Freschi e Freschissimi",
+  HOTEL_CON_CUCINA: "Hotel con Cucina",
+  HOTEL_SENZA_CUCINA: "Hotel senza Cucina",
+  RISTORANTE: "Ristorante",
+  RISTORANTE_ETNICO: "Ristorante Etnico",
+  RISTORANTE_VEGANO: "Ristorante Vegano",
+  RISTORANTE_VEGETARIANO: "Ristorante Vegetariano",
+  LIBERI_PROFESSIONISTI: "Liberi Professionisti",
+};
 
-// Mock o caricamento dinamico iniziale per i comuni del DB
-const MOCK_MUNICIPALITIES = [
-  { id: "e3b0c442-98fc-11ee-b9d1-0242ac120002", name: "Firenze" },
-  { id: "f4c1d553-98fc-11ee-b9d1-0242ac120002", name: "Lucca" },
-  { id: "a1b2c3d4-5678-90ab-cdef-1234567890ab", name: "Siena" },
-  { id: "09876543-fedc-ba09-8765-43210fedcba0", name: "Pisa" },
-];
+type Municipality = {
+  municipalityId: string;
+  municipalityName: string;
+};
 
 export default function SignUpB2b() {
   const router = useRouter();
@@ -51,6 +52,30 @@ export default function SignUpB2b() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [globalError, setGlobalError] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
+
+  const searchMunicipalities = async (query: string) => {
+    if (query.trim().length < 2) {
+      setMunicipalities([]);
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/municipalities/search?municipalityName=${encodeURIComponent(query)}`,
+      );
+
+      if (!res.ok) {
+        throw new Error("Errore nel caricamento dei comuni");
+      }
+
+      const data: Municipality[] = await res.json();
+      setMunicipalities(data);
+    } catch (error) {
+      console.error("Errore caricamento comuni", error);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -96,7 +121,6 @@ export default function SignUpB2b() {
       if (!formData.municipalityId)
         newErrors.municipalityId = "Il comune è richiesto";
 
-      // Specifica logica Backend: Almeno uno dei due deve esserci
       const hasVat = formData.vatNumber.trim().length > 0;
       const hasFiscal = formData.fiscalCode.trim().length > 0;
       if (!hasVat && !hasFiscal) {
@@ -137,11 +161,16 @@ export default function SignUpB2b() {
     if (!validateStep(currentStep)) return;
     setGlobalError("");
 
-    const payload = formData;
+    const payload = {
+      ...formData,
+      municipalityId: formData.municipalityId || null,
+      fiscalCode: formData.fiscalCode || null,
+      vatNumber: formData.vatNumber || null,
+    };
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/register/b2b`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register/b2b`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -158,30 +187,18 @@ export default function SignUpB2b() {
       }
 
       setIsSubmitted(true);
+      router.push("/verify-b2b?registered=true");
     } catch (err) {
       setGlobalError(err instanceof Error ? err.message : "Errore imprevisto");
     }
   };
 
   const progressPercent = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
-  //const stepLabels = ["User", "Building", "Mail"];
 
   const stepLabels = [
-    {
-      id: 1,
-      title: "Referente",
-      icon: <UserCheck />,
-    },
-    {
-      id: 2,
-      title: "Azienda",
-      icon: <Building2 />,
-    },
-    {
-      id: 3,
-      title: "Termini",
-      icon: <MailCheck />,
-    },
+    { id: 1, title: "Referente", icon: <UserCheck /> },
+    { id: 2, title: "Azienda", icon: <Building2 /> },
+    { id: 3, title: "Termini", icon: <MailCheck /> },
   ];
 
   if (isSubmitted) {
@@ -217,7 +234,6 @@ export default function SignUpB2b() {
 
   return (
     <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-(--color-brand-white)">
-      {/* IMMAGINE */}
       <div className="hidden lg:block relative overflow-hidden">
         <img
           src="/images/login-microgreens.jpg"
@@ -227,7 +243,6 @@ export default function SignUpB2b() {
         <div className="absolute inset-0 bg-(--color-brand-green)/10 backdrop-blur-[2px]" />
       </div>
 
-      {/* FORM CONTAINER */}
       <div className="flex items-center justify-center px-5 py-10 md:px-8 lg:px-16">
         <div className="w-full max-w-md">
           <div className="mb-8">
@@ -247,13 +262,12 @@ export default function SignUpB2b() {
             </p>
           )}
 
-          {/* PROGRESS BAR */}
           <div className="mb-8">
             <div className="flex justify-between mb-2">
               {stepLabels.map((item) => (
                 <span
                   key={item.id}
-                  className={`text-xs font-mono uppercase border-green-800`}
+                  className="text-xs font-mono uppercase border-green-800"
                 >
                   {item.icon}
                 </span>
@@ -268,7 +282,6 @@ export default function SignUpB2b() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            {/* STEP 1 */}
             {currentStep === 1 && (
               <>
                 <div>
@@ -280,7 +293,7 @@ export default function SignUpB2b() {
                     type="text"
                     value={formData.contactName}
                     onChange={handleChange}
-                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.contactName ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.contactName ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                   />
                   {errors.contactName && (
                     <p className="mt-1 text-xs text-red-600">
@@ -297,10 +310,10 @@ export default function SignUpB2b() {
                     type="text"
                     value={formData.contactSurname}
                     onChange={handleChange}
-                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.contactSurname ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.contactSurname ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                   />
                   {errors.contactSurname && (
-                    <p className="mt-1 text-xs text-red-600!">
+                    <p className="mt-1 text-xs text-red-600">
                       {errors.contactSurname}
                     </p>
                   )}
@@ -334,7 +347,7 @@ export default function SignUpB2b() {
                     type="text"
                     value={formData.contactPhone}
                     onChange={handleChange}
-                    className="mt-2 block w-full rounded-md border-2 border-neutral-300 bg-white px-4 py-2 text-neutral-950 outline-none focus:border-[var(--color-brand-green)]"
+                    className="mt-2 block w-full rounded-md border-2 border-neutral-300 bg-white px-4 py-2 text-neutral-950 outline-none focus:border-(--color-brand-green)"
                   />
                 </div>
                 <div>
@@ -346,7 +359,7 @@ export default function SignUpB2b() {
                     type="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.password ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.password ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                   />
                   {errors.password && (
                     <p className="mt-1 text-xs text-red-600">
@@ -357,7 +370,6 @@ export default function SignUpB2b() {
               </>
             )}
 
-            {/* STEP 2 */}
             {currentStep === 2 && (
               <>
                 <div>
@@ -369,7 +381,7 @@ export default function SignUpB2b() {
                     type="text"
                     value={formData.companyName}
                     onChange={handleChange}
-                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.companyName ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.companyName ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                   />
                   {errors.companyName && (
                     <p className="mt-1 text-xs text-red-600">
@@ -385,13 +397,20 @@ export default function SignUpB2b() {
                   <select
                     name="typeActivity"
                     value={formData.typeActivity}
-                    onChange={handleChange}
-                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2.5 text-base text-neutral-950 outline-none ${errors.typeActivity ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        typeActivity: e.target.value,
+                      }));
+                      if (errors.typeActivity)
+                        setErrors((prev) => ({ ...prev, typeActivity: "" }));
+                    }}
+                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.typeActivity ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                   >
-                    <option value="">Seleziona un'opzione...</option>
-                    {TYPE_ACTIVITY_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
+                    <option value="">Seleziona una tipologia...</option>
+                    {Object.keys(TYPE_ACTIVITY_LABELS).map((enumKey) => (
+                      <option key={enumKey} value={enumKey}>
+                        {TYPE_ACTIVITY_LABELS[enumKey]}
                       </option>
                     ))}
                   </select>
@@ -402,23 +421,55 @@ export default function SignUpB2b() {
                   )}
                 </div>
 
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-neutral-900">
                     Comune di Riferimento
                   </label>
-                  <select
-                    name="municipalityId"
-                    value={formData.municipalityId}
-                    onChange={handleChange}
-                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2.5 text-base text-neutral-950 outline-none ${errors.municipalityId ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
-                  >
-                    <option value="">Seleziona il tuo comune...</option>
-                    {MOCK_MUNICIPALITIES.map((mun) => (
-                      <option key={mun.id} value={mun.id}>
-                        {mun.name}
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                    type="text"
+                    placeholder="Inizia a digitare il comune..."
+                    value={searchTerm}
+                    onFocus={() => setIsDropdownOpen(true)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSearchTerm(val);
+                      setIsDropdownOpen(true);
+                      searchMunicipalities(val);
+                      if (!val) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          municipalityId: "",
+                        }));
+                      }
+                    }}
+                    className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.municipalityId ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
+                  />
+                  {isDropdownOpen && municipalities.length > 0 && (
+                    <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-neutral-200 bg-white py-1 text-sm shadow-lg focus:outline-none">
+                      {municipalities.map((mun) => (
+                        <li
+                          key={mun.municipalityId}
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              municipalityId: mun.municipalityId,
+                            }));
+                            setSearchTerm(mun.municipalityName); // FIXXED: Usava .name anziché .municipalityName
+                            setIsDropdownOpen(false);
+                            if (errors.municipalityId) {
+                              setErrors((prev) => ({
+                                ...prev,
+                                municipalityId: "",
+                              }));
+                            }
+                          }}
+                          className="cursor-pointer select-none px-4 py-2 text-neutral-900 hover:bg-neutral-100 transition"
+                        >
+                          {mun.municipalityName}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   {errors.municipalityId && (
                     <p className="mt-1 text-xs text-red-600">
                       {errors.municipalityId}
@@ -437,7 +488,7 @@ export default function SignUpB2b() {
                       placeholder="11 cifre"
                       value={formData.vatNumber}
                       onChange={handleChange}
-                      className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.vatNumber ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                      className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.vatNumber ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                     />
                     {errors.vatNumber && (
                       <p className="mt-1 text-xs text-red-600">
@@ -455,7 +506,7 @@ export default function SignUpB2b() {
                       type="text"
                       value={formData.fiscalCode}
                       onChange={handleChange}
-                      className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.fiscalCode ? "border-red-400" : "border-neutral-300 focus:border-[var(--color-brand-green)]"}`}
+                      className={`mt-2 block w-full rounded-md border-2 bg-white px-4 py-2 text-neutral-950 outline-none ${errors.fiscalCode ? "border-red-400" : "border-neutral-300 focus:border-(--color-brand-green)"}`}
                     />
                     {errors.fiscalCode && (
                       <p className="mt-1 text-xs text-red-600">
@@ -467,7 +518,6 @@ export default function SignUpB2b() {
               </>
             )}
 
-            {/* STEP 3 */}
             {currentStep === 3 && (
               <div className="py-4 space-y-4">
                 <h4 className="text-base font-semibold text-neutral-900">
@@ -523,7 +573,6 @@ export default function SignUpB2b() {
               </div>
             )}
 
-            {/* CONTROLLI DI NAVIGAZIONE */}
             <div
               className={`flex mt-8 ${currentStep > 1 ? "justify-between" : "justify-end"}`}
             >
@@ -531,7 +580,7 @@ export default function SignUpB2b() {
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="px-5 py-2 rounded-md border-2 btn-secondary text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition"
+                  className="px-5 py-2 rounded-md border-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition"
                 >
                   Indietro
                 </button>
@@ -541,7 +590,7 @@ export default function SignUpB2b() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="px-5 py-2 rounded-md btn-primary text-sm font-semibold text-white hover:bg-green-900 transition"
+                  className="px-5 py-2 rounded-md bg-green-800 text-sm font-semibold text-white hover:bg-green-900 transition"
                 >
                   Avanti
                 </button>

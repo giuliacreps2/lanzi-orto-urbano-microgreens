@@ -77,7 +77,7 @@ export default function SignUpUser() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/register/b2c`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register/b2c`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -92,7 +92,7 @@ export default function SignUpUser() {
       }
 
       console.log("REGISTRAZIONE EFFETTUATA", data);
-      router.push("/login?registered=true");
+      router.push("/verify?registered=true");
     } catch (err) {
       setGlobalError(
         err instanceof Error
