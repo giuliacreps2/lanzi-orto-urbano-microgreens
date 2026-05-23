@@ -1,10 +1,22 @@
-import { BellIcon, SearchIcon } from "lucide-react";
+import { BellIcon, MenuIcon, SearchIcon } from "lucide-react";
 import { AvatarButton } from "@/components/ui/avatar";
 
-export default function AdminTopbar() {
+type AdminTopbarProps = {
+  onOpenMobileSidebar: () => void;
+};
+
+export default function AdminTopbar({ onOpenMobileSidebar }: AdminTopbarProps) {
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/90 backdrop-blur">
       <div className="flex h-16 items-center gap-4 px-4 sm:px-6 lg:px-8">
+        <button
+          type="button"
+          onClick={onOpenMobileSidebar}
+          className="flex size-10 items-center justify-center rounded-xl bg-white hover:bg-zinc-50 md:hidden"
+        >
+          <MenuIcon className="size-5 text-zinc-700" />
+        </button>
+
         <div className="relative hidden w-full max-w-md md:block">
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
 

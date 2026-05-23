@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
 
@@ -6,13 +9,20 @@ export default function AdminShell({
 }: {
   children: React.ReactNode;
 }) {
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-zinc-100 text-zinc-950">
       <div className="flex min-h-screen">
-        <AdminSidebar />
+        <AdminSidebar
+          isMobileSidebarOpen={isMobileSidebarOpen}
+          onCloseMobileSidebar={() => setIsMobileSidebarOpen(false)}
+        />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <AdminTopbar />
+          <AdminTopbar
+            onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+          />
 
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl">{children}</div>

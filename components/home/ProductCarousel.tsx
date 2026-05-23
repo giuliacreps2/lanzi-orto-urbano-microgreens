@@ -1,4 +1,4 @@
-import { Button } from "../ui/Button";
+import { Button } from "../ui/button";
 import { ProductCard } from "../ui/ProductCard";
 import type { Product } from "@/src/types/product";
 

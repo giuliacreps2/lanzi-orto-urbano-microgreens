@@ -1,5 +1,4 @@
-import { cn } from "@/src/lib/utils";
-import { propagateServerField } from "next/dist/server/lib/render-server";
+import { cn } from "@/lib/utils";
 
 export function Table({
   className,

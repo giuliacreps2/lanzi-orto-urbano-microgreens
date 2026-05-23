@@ -1,5 +1,5 @@
 import type { AudienceContent, AudienceIcon } from "@/src/types/audience";
-import { Button } from "../ui/Button";
+import { Button } from "../ui/button";
 import Image from "next/image";
 import { Home, Utensils } from "lucide-react";
 import type { ElementType } from "react";

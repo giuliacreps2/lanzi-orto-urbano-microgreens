@@ -1,22 +1,22 @@
-import { B2BPromoContent } from "@/src/types/b2bPromo"
-import { Button } from "../ui/Button"
-import { Check } from "lucide-react"
+import { B2BPromoContent } from "@/src/types/b2bPromo";
+import { Button } from "../ui/button";
+import { Check } from "lucide-react";
 import Image from "next/image";
 
 type B2bPromoSectionProps = {
-    content: B2BPromoContent
-}
+  content: B2BPromoContent;
+};
 
-export function B2BPromoSection({content} : B2bPromoSectionProps){
-    return(
-        <section className="bg-[var(--color-brand-beige)] px-5 mt-5 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
+export function B2BPromoSection({ content }: B2bPromoSectionProps) {
+  return (
+    <section className="bg-[var(--color-brand-beige)] px-5 mt-5 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 overflow-hidden border-y border-[rgba(184,197,168,0.65)] bg-white lg:grid-cols-[1fr_1fr]">
         <div className="relative min-h-[260px] lg:min-h-[380px]">
           <Image
             src={content.image.src}
             alt={content.image.alt}
-
-            fill className="object-fill"
+            fill
+            className="object-fill"
           />
         </div>
 
@@ -29,7 +29,7 @@ export function B2BPromoSection({content} : B2bPromoSectionProps){
             {content.description}
           </p>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {content.features.map((feature) => (
               <div key={feature.label} className="flex items-start gap-2">
                 <Check
@@ -44,7 +44,6 @@ export function B2BPromoSection({content} : B2bPromoSectionProps){
             ))}
           </div>
 
-
           <Button
             href={content.action.href}
             variant={content.action.variant}
@@ -54,7 +53,7 @@ export function B2BPromoSection({content} : B2bPromoSectionProps){
           </Button>
         </div>
 
- {/*} {content.decorativeImage && (
+        {/*} {content.decorativeImage && (
           <div className="relative hidden min-h-[380px] lg:block">
             <Image
               src={content.decorativeImage.src}
@@ -64,9 +63,7 @@ export function B2BPromoSection({content} : B2bPromoSectionProps){
             />
           </div>
         )}*/}
-
-
-        </div>
-        </section>
-    )
+      </div>
+    </section>
+  );
 }
