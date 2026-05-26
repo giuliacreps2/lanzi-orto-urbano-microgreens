@@ -62,7 +62,7 @@ export default function AdminProductsPage() {
             className="h-10 rounded-xl border border-zinc-200 bg-zinc-50 px-3 text-sm outline-none transition placeholder:text-zinc-400 focus:border-zinc-400 focus:bg-white sm:w-80"
           />
 
-          <div className="flex-gap-2">
+          <div className="flex gap-2">
             <Button variant="adminOutline">Filtra</Button>
             <Button variant="adminOutline">Ordina</Button>
           </div>
