@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronUpIcon, Sidebar, XIcon } from "lucide-react";
+import { ChevronUpIcon, XIcon } from "lucide-react";
 
 import { adminMainNavigation, adminNavigation } from "@/lib/admin-navigation";
 import { cn } from "@/lib/utils";

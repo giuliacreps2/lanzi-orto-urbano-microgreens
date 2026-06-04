@@ -1,4 +1,3 @@
-import { CreateProductCategoryPayload } from "./categories";
 import { apiRequest } from "./client";
 import type {
   AttributeType,
@@ -6,38 +5,38 @@ import type {
   Unit,
 } from "@/types/product";
 
-export type createProductCategoryAttributePayload = {
+export type CreateProductCategoryAttributePayload = {
   prodCatAttributeKey: string;
   prodCatAttributeLabel: string;
   attrType: AttributeType;
   required: boolean;
   defaultValue?: string | null;
-  minValue?: string | null;
-  maxValue?: string | null;
+  minValue?: number | null;
+  maxValue?: number | null;
   unit?: Unit | null;
   productCategoryId: string;
 };
 
 export async function getAttributesByCategory(
   productCategoryId: string,
-  token?: string | null,
+  accessToken?: string | null,
 ) {
   return apiRequest<ProductCategoryAttribute[]>(
     `/attributes/category/${productCategoryId}`,
     {
       method: "GET",
-      token,
+      accessToken,
     },
   );
 }
 
 export async function createProductCategoryAttribute(
-  payload: CreateProductCategoryPayload,
-  token?: string | null,
+  payload: CreateProductCategoryAttributePayload,
+  accessToken?: string | null,
 ) {
   return apiRequest<ProductCategoryAttribute>("/attributes/new-attr", {
     method: "POST",
     body: JSON.stringify(payload),
-    token,
+    accessToken,
   });
 }

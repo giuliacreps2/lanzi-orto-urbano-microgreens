@@ -7,20 +7,20 @@ export type CreateProductCategoryPayload = {
   metadataProdCategory?: ProductCategoryMetadata;
 };
 
-export async function getProductCategories(token?: string | null) {
+export async function getProductCategories(accessToken?: string | null) {
   return apiRequest<ProductCategory[]>("/categories", {
     method: "GET",
-    token,
+    accessToken,
   });
 }
 
 export async function createProductCategory(
   payload: CreateProductCategoryPayload,
-  token?: string | null,
+  accessToken?: string | null,
 ) {
   return apiRequest<ProductCategory>("/categories/new-cat", {
     method: "POST",
     body: JSON.stringify(payload),
-    token,
+    accessToken,
   });
 }

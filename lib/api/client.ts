@@ -1,7 +1,7 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type ApiRequestOptions = RequestInit & {
-  token?: string | null;
+  accessToken?: string | null;
 };
 
 export async function apiRequest<T>(
@@ -12,26 +12,36 @@ export async function apiRequest<T>(
     throw new Error("NEXT_PUBLIC_API_URL is not define in .env.local file");
   }
 
-  const { token, headers, ...rest } = options;
+  const { accessToken, headers, ...rest } = options;
+
+  const requestHeaders: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    ...headers,
+  };
+
+  console.log("API REQUEST:", `${API_BASE_URL}${endpoint}`);
+  console.log("ACCESS TOKEN PRESENTE:", Boolean(accessToken));
+  console.log("REQUEST HEADERS:", requestHeaders);
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...rest,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
+    headers: requestHeaders,
   });
 
+  const responseText = await response.text();
+
   if (!response.ok) {
-    let errorMessage = "Errore durante la richiesta";
+    let errorMessage = "Errore ${response.status}: durante la richiesta";
 
     try {
-      const errorBody = await response.json();
+      //const errorBody = await response.json();
+      const errorBody = JSON.parse(responseText);
       errorMessage =
         errorBody.message || errorBody.error || JSON.stringify(errorBody);
     } catch {
-      errorMessage = await response.text();
+      //errorMessage = await response.text();
+      if (responseText) errorMessage = responseText;
     }
     throw new Error(errorMessage);
   }
@@ -40,5 +50,6 @@ export async function apiRequest<T>(
     return undefined as T;
   }
 
-  return response.json() as Promise<T>;
+  //return response.json() as Promise<T>;
+  return JSON.parse(responseText) as T;
 }

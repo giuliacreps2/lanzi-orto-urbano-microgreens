@@ -47,9 +47,9 @@ export type TechnicalDetails = Record<
 export type ProductCategoryMetadata = {
   category: ProductCategoryCode;
   label_type: string;
-  inventory_logi: {
+  inventory_logic: {
     decrement_type: "COMPONENTS" | "FINISHED_GOOD";
-    component: string[];
+    components: string[];
   };
 };
 
@@ -74,7 +74,7 @@ export type ProductCategoryAttribute = {
 
 export type Product = {
   productId: string;
-  productNmae: string;
+  productName: string;
   productSlug: string;
   productDescription: string;
   shortProductDescription: string;
@@ -96,7 +96,7 @@ export type ProductVariant = {
 
 export type PackagingType = {
   packTypeId: string;
-  namePackeType: string;
+  namePackType: string;
   unitOfMeasure: string;
 };
 
@@ -105,4 +105,28 @@ export type PriceList = {
   price: number;
   minOrderQuantity?: number;
   clientCategory: ClientCategory;
+};
+
+export type CompositeProductFormPayload = {
+  productName: string;
+  productSlug: string;
+  productDescription?: string;
+  shortProductDescription?: string;
+  availabilityStatus: AvailabilityStatus;
+  productIsAvailable: boolean;
+  productStatus: ProductStatus;
+  productCategoryId: string;
+
+  //DETTAGLI VARIANTE
+  skuVariant: string;
+  activeVariant: boolean;
+  netWeight: number;
+  unit: Unit;
+  packTypeId: string;
+  technicalDetails?: TechnicalDetails;
+
+  //DETTAGLIO PREZZI
+  b2cPrice: number;
+  b2bPrice: number;
+  b2bMinOrderQuantity?: number;
 };

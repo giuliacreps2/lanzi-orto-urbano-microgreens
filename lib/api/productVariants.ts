@@ -11,13 +11,13 @@ export type CreteProductVariantPayload = {
   technicalDetails?: TechnicalDetails;
 };
 
-export async function createProductVarian(
+export async function createProductVariant(
   payload: CreteProductVariantPayload,
-  token?: string | null,
+  accessToken?: string | null,
 ) {
   return apiRequest<ProductVariant>("/variants/new-var", {
     method: "POST",
     body: JSON.stringify(payload),
-    token,
+    accessToken,
   });
 }

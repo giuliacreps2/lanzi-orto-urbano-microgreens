@@ -1,4 +1,5 @@
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import BentoGrid from "@/components/admin/BentoGrid";
 
 export default function AdminDashboardPage() {
   return (
@@ -31,6 +32,8 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
+
+      <BentoGrid />
     </>
   );
 }

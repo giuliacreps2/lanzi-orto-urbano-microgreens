@@ -15,7 +15,6 @@ type ButtonVariant =
   | "danger";
 
 type BaseButtonProps = {
-  href: string;
   children: ReactNode;
   variant?: ButtonVariant;
   className?: string;

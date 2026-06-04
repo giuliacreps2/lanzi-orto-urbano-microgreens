@@ -1,3 +1,9 @@
+import House from "./home/page";
+
 export default function Home() {
-  return <main>{/*<SignUpB2b />*/}</main>;
+  return (
+    <main>
+      <House />
+    </main>
+  );
 }

@@ -10,11 +10,11 @@ export type CreatePriceListPayload = {
 
 export async function createPriceList(
   payload: CreatePriceListPayload,
-  token?: string | null,
+  accessToken?: string | null,
 ) {
   return apiRequest<PriceList>("/price-list/new-prz", {
     method: "POST",
     body: JSON.stringify(payload),
-    token,
+    accessToken,
   });
 }

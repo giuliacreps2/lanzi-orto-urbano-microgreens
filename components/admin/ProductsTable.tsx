@@ -11,13 +11,13 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "../ui/avatar";
 import { MoreHorizontalIcon } from "lucide-react";
 
-type ProductStatus = "Attivo" | "Bozza" | "Archiviato";
+type ProductStatus = "ACTIVE" | "DRAFT" | "ARCHIVED";
 
 export type AdminProduct = {
   id: string;
   name: string;
   category: string;
-  status: "Attivo" | "Bozza" | "Archiviato";
+  status: ProductStatus;
   stock: number;
   price: string;
   previewImageUrl?: string;
@@ -27,18 +27,17 @@ type ProductsTableProps = {
   products: AdminProduct[];
 };
 
-function getStatusClass(status: AdminProduct["status"]) {
-  switch (status) {
-    case "Attivo":
-      return "bg-green-100 text-green-700";
-    case "Bozza":
-      return "bg-yellow-100 text-yellow-800";
-    case "Archiviato":
-      return "bg-zinc-100 text-zinc-600";
-    default:
-      return "bg-zinc-100 text-zinc-600";
-  }
-}
+const productStatusLabel: Record<ProductStatus, string> = {
+  ACTIVE: "Attivo",
+  DRAFT: "Bozza",
+  ARCHIVED: "Archiviato",
+};
+
+const productStatusClass: Record<ProductStatus, string> = {
+  ACTIVE: "bg-green-100 text-green-700",
+  DRAFT: "bg-yellow-100 text-yellow-800",
+  ARCHIVED: "bg-zinc-100 text-zinc-600",
+};
 
 export default function ProductsTable({ products }: ProductsTableProps) {
   return (
@@ -50,7 +49,7 @@ export default function ProductsTable({ products }: ProductsTableProps) {
           <TableHeader>Stato</TableHeader>
           <TableHeader>Stock</TableHeader>
           <TableHeader>Prezzo</TableHeader>
-          <TableHeader className="text-righ">Azioni</TableHeader>
+          <TableHeader className="text-right">Azioni</TableHeader>
         </TableRow>
       </TableHead>
 
@@ -75,7 +74,7 @@ export default function ProductsTable({ products }: ProductsTableProps) {
                   </Link>
 
                   <p className="mt-0.5 text-xs text-zinc-500">
-                    ID:{product.id}
+                    ID: {product.id}
                   </p>
                 </div>
               </div>
@@ -87,10 +86,10 @@ export default function ProductsTable({ products }: ProductsTableProps) {
               <span
                 className={cn(
                   "inline-flex rounded-full px-2.5 py-1 text-xs font-medium",
-                  getStatusClass(product.status),
+                  productStatusClass[product.status],
                 )}
               >
-                {product.status}
+                {productStatusLabel[product.status]}
               </span>
             </TableCell>
 
@@ -98,7 +97,7 @@ export default function ProductsTable({ products }: ProductsTableProps) {
 
             <TableCell className="text-zinc-500">{product.price}</TableCell>
 
-            <TableCell className="text-righr">
+            <TableCell className="text-right">
               <button
                 type="button"
                 className="inline-flex size-9 items-center justify-center rounded-xl hover:bg-zinc-100"
