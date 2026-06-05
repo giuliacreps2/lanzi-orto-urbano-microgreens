@@ -19,7 +19,7 @@ Frontend of the Lanzi Orto Urbano e-commerce platform for fresh microgreens, bui
 
 | | Link |
 |---|---|
-| 🔧 Backend Repository | [github.com/giuliacreps2/Lanzi-Orto-Urbano-Management]([https://github.com/giuliacreps2/Lanzi-Orto-Urbano-Management]) |
+| 🔧 Backend Repository | [github.com/giuliacreps2/Lanzi-Orto-Urbano-Management](https://github.com/giuliacreps2/Lanzi-Orto-Urbano-Management) |
 
 ---
 
