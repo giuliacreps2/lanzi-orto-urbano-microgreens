@@ -1,8 +1,6 @@
 import { apiRequest } from "./client";
 import type { AdminOrderDetailDTO, AdminOrderRowDTO } from "@/types/order";
 
-const accessToken = localStorage.getItem("token");
-
 export type PageResponse<T> = {
   content: T[];
   totalElements: number;
