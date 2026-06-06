@@ -19,7 +19,7 @@ export function PartnerSection({
   imageAlt = "Chef che lavora con microgreens",
 }: PartnerSectionProps) {
   return (
-    <section className="partner-section bg-amber-50">
+    <section className="partner-section">
       <div className="partner-inner">
         {/* ── Immagine ── */}
         <div className="partner-image-wrapper">
