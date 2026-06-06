@@ -1,17 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Leaf, MapPin, Sprout } from "lucide-react";
-import type { ElementType } from "react";
-import type { HeroBenefitIcon, HeroContent} from "@/src/types/home";
+import type { HeroContent } from "@/types/home";
 
 type HeroProps = {
   content: HeroContent;
-};
-
-const benefitIcons: Record<HeroBenefitIcon, ElementType> = {
-  sprout: Sprout,
-  "map-pin": MapPin,
-  leaf: Leaf,
 };
 
 export function Hero({ content }: HeroProps) {
@@ -45,34 +37,17 @@ export function Hero({ content }: HeroProps) {
           </div>
         </div>
 
-        <div className="hero-image-wrapper">
-          <Image
-            src={content.image.src }
-            alt={content.image.alt }
-            fill
-            priority
-            className="hero-image"
-          />
-        </div>
-
-        <div className="hero-benefits">
-          {content.benefits.map((benefit) => {
-            const Icon = benefitIcons[benefit.icon];
-
-            return (
-              <div key={benefit.title} className="hero-benefit">
-                <div className="hero-benefit-icon">
-                  <Icon size={20} strokeWidth={1.7} />
-                </div>
-
-                <div>
-                  <p className="hero-benefit-title">{benefit.title}</p>
-                  <p className="micro-text">{benefit.description}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {content.image?.src && (
+          <div className="hero-image-wrapper">
+            <Image
+              src={content.image.src}
+              alt={content.image.alt ?? ""}
+              fill
+              priority
+              className="hero-image"
+            />
+          </div>
+        )}
       </div>
     </section>
   );

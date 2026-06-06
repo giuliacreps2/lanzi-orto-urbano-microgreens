@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* =========================
+   CSS VARIABLES
+========================= */
+
 :root {
   --background: #f8f5ea;
   --foreground: #151811;
@@ -15,19 +19,24 @@
   --color-brand-border: #b8c5a8;
   --color-brand-white: #ffffff;
 
-  --font-serif-brand: var(--font-jakarta);
+  --font-brand: var(--font-jakarta, system-ui, sans-serif);
 
-  --radius-sm: 6px;
+  --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 28px;
 
   --container-width: 1280px;
+  --navbar-height: 64px;
 }
 
-/* GENERAL */
+/* =========================
+   RESET & BASE
+========================= */
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -35,30 +44,131 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-brand);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.a {
-  font-family: var(--font-serif-brand);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-brand);
+  font-weight: 600;
+  margin: 0;
 }
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* =========================
+   LAYOUT UTILITIES
+========================= */
 
 .container-page {
   width: min(100% - 40px, var(--container-width));
   margin-inline: auto;
 }
 
+/* =========================
+   TYPOGRAPHY SCALE
+========================= */
+
+.eyebrow {
+  color: var(--color-brand-green);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin: 0;
+  padding: 12px 0;
+}
+
+.hero-title {
+  color: var(--color-brand-black);
+  font-size: clamp(2.6rem, 6vw, 4.8rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.section-title {
+  color: var(--color-brand-black);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.section-title-white {
+  color: var(--color-brand-white);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.section-title-black {
+  color: var(--color-brand-black);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.body-text {
+  color: var(--color-brand-text);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.small-text {
+  color: var(--color-brand-muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.micro-text {
+  color: var(--color-brand-muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
 .btn {
   display: inline-flex;
   height: 48px;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm); /* smussato, non pill */
   padding-inline: 24px;
-  font-size: 0.8rem;
+  font-family: var(--font-brand);
+  font-size: 0.82rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-decoration: none;
+  cursor: pointer;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
@@ -68,11 +178,11 @@ body {
 .btn-primary {
   border: 1px solid var(--color-brand-dark);
   background: var(--color-brand-dark);
-  color: white;
+  color: #fff;
 }
-
 .btn-primary:hover {
   background: #1d3f23;
+  border-color: #1d3f23;
 }
 
 .btn-secondary {
@@ -80,65 +190,18 @@ body {
   background: transparent;
   color: var(--color-brand-dark);
 }
-
 .btn-secondary:hover {
   background: #e9eee3;
 }
 
-.eyebrow {
-  margin: 0;
-  color: var(--color-brand-green);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+.btn-brand {
+  border: 1px solid var(--color-primary-green);
+  background: var(--color-primary-green);
+  color: #fff;
 }
-
-.hero-title {
-  margin: 0;
-  color: var(--color-brand-black);
-  font-family: var(--font-serif-brand);
-  font-size: clamp(2.6rem, 6vw, 5rem);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-}
-
-.section-title {
-  margin: 0;
-  color: var(--color-brand-black);
-  font-family: var(--font-serif-brand);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.section-title-white {
-  font-family: var(--font-serif-brand);
-}
-
-.section-title-black {
-  font-family: var(--font-serif-brand);
-}
-
-.body-text {
-  margin: 0;
-  color: var(--color-brand-text);
-  font-size: 1rem;
-  line-height: 1.7;
-}
-
-.small-text {
-  margin: 0;
-  color: var(--color-brand-muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.micro-text {
-  margin: 0;
-  color: var(--color-brand-muted);
-  font-size: 0.78rem;
-  line-height: 1.45;
+.btn-brand:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 /* =========================
@@ -146,8 +209,19 @@ body {
 ========================= */
 
 .hero {
+  /* Nessun padding-top: la navbar è fixed e la hero parte subito sotto grazie a navbar-offset */
   background: var(--color-brand-beige);
-  padding-block: 28px 40px;
+  padding-bottom: 48px;
+  padding-top: 62px;
+  /* Nessun padding laterale: full-width */
+  width: 100%;
+}
+
+.hero-inner {
+  /* Contenuto centrato con padding laterale interno */
+  width: min(100% - 48px, var(--container-width));
+  margin-inline: auto;
+  padding-top: 48px;
 }
 
 .hero-grid {
@@ -161,11 +235,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.hero-heading {
-  max-width: 640px;
-  margin-top: 14px;
+  padding-top: 56px;
 }
 
 .hero-heading-highlight {
@@ -194,255 +264,115 @@ body {
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-top-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
+  border-radius: var(--radius-xl);
 }
 
 .hero-image {
   object-fit: cover;
 }
 
-.hero-benefits {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  width: 100%;
-  margin-top: 24px;
-}
-
-.hero-benefit {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 15px;
-  border: 1px solid rgba(184, 197, 168, 0.75);
-  border-radius: var(--radius-lg);
-  background: var(--color-brand-white);
-}
-
-.hero-benefit-icon {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-brand-border);
-  border-radius: 999px;
-  color: var(--color-brand-green);
-}
-
-.hero-benefit-title {
-  margin: 0 0 4px;
-  color: var(--color-brand-dark);
-  font-size: 0.9rem;
-  font-weight: 900;
-}
-
 /* =========================
-   MOBILE SMALL
-   fino a 480px
+   HERO — RESPONSIVE
 ========================= */
 
 @media (max-width: 480px) {
-  .container-page {
+  .hero-inner {
     width: min(100% - 32px, var(--container-width));
+    padding-top: 32px;
   }
-
-  .hero {
-    padding-block: 24px 36px;
-  }
-
-  .hero-grid {
-    gap: 28px;
-  }
-
   .hero-title {
     font-size: clamp(2.35rem, 13vw, 3.4rem);
     line-height: 0.98;
     letter-spacing: -0.045em;
   }
-
   .hero-description {
-    margin-top: 18px;
-    font-size: 0.98rem;
-    line-height: 1.65;
+    margin-top: 16px;
+    font-size: 0.95rem;
   }
-
   .hero-actions {
-    margin-top: 28px;
+    margin-top: 24px;
   }
-
-  .btn {
-    height: 46px;
-    padding-inline: 18px;
-    font-size: 0.74rem;
-  }
-
   .hero-image-wrapper {
     aspect-ratio: 1 / 0.92;
-    border-top-left-radius: 24px;
-    border-bottom-right-radius: 24px;
-  }
-
-  .hero-benefits {
-    margin-top: 20px;
-    gap: 12px;
-  }
-
-  .hero-benefit {
-    padding: 14px;
-  }
-
-  .hero-benefit-icon {
-    width: 38px;
-    height: 38px;
+    border-radius: 20px;
   }
 }
 
-/* =========================
-   MOBILE LARGE / TABLET SMALL
-   481px - 767px
-========================= */
-
 @media (min-width: 481px) and (max-width: 767px) {
-  .hero {
-    padding-block: 32px 48px;
-  }
-
   .hero-title {
     font-size: clamp(3rem, 10vw, 4.2rem);
   }
-
   .hero-actions {
     max-width: 420px;
   }
-
-  .hero-image-wrapper {
-    aspect-ratio: 4 / 3;
-  }
-
-  .hero-benefits {
-    grid-column: 1 / 2;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-top: 24px;
-  }
-
-  .hero-benefit {
-    flex-direction: column;
-    gap: 10px;
-  }
 }
 
-/* =========================
-   TABLET
-   da 768px
-========================= */
-
 @media (min-width: 768px) {
-  .hero {
-    padding-block: 40px 56px;
+  .hero-inner {
+    padding-top: 56px;
   }
-
   .hero-grid {
     grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-    gap: 44px;
+    gap: 48px;
   }
-
   .hero-actions {
-    width: auto;
     flex-direction: row;
+    width: auto;
   }
-
   .hero-actions .btn {
     width: auto;
   }
-
-  .hero-benefits {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-  }
-
-  .hero-benefit {
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
   .hero-image-wrapper {
     aspect-ratio: 5 / 4;
   }
 }
 
-/* =========================
-   DESKTOP
-   da 1024px
-========================= */
-
 @media (min-width: 1024px) {
-  .hero {
-    padding-block: 48px 64px;
+  .hero-inner {
+    padding-top: 64px;
   }
-
-  .hero-grid {
-    gap: 64px;
-  }
-
-  .hero-description {
-    margin-top: 24px;
-  }
-
-  .hero-actions {
-    margin-top: 38px;
-  }
-
-  .hero-benefits {
-    margin-top: 24px;
-    gap: 24px;
-  }
-
-  .hero-image-wrapper {
-    min-height: 520px;
-  }
-}
-
-/* =========================
-   LARGE DESKTOP
-   da 1280px
-========================= */
-
-@media (min-width: 1280px) {
-  .hero {
-    padding-block: 56px 72px;
-  }
-
   .hero-grid {
     gap: 72px;
   }
+  .hero-image-wrapper {
+    min-height: 520px;
+    aspect-ratio: unset;
+  }
+  .hero-description {
+    margin-top: 24px;
+  }
+  .hero-actions {
+    margin-top: 36px;
+  }
+}
 
+@media (min-width: 1280px) {
+  .hero-inner {
+    padding-top: 72px;
+  }
   .hero-image-wrapper {
     min-height: 560px;
   }
 }
+
+/* =========================
+   PRINT
+========================= */
 
 @media print {
   @page {
     size: 60mm 40mm;
     margin: 0;
   }
-
   html,
   body {
     margin: 0 !important;
     padding: 0 !important;
     background: white !important;
   }
-
   body * {
     visibility: hidden;
   }
-
   .print\:block,
   .print\:block * {
     visibility: visible;
