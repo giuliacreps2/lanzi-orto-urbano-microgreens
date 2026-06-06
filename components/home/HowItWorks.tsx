@@ -1,4 +1,4 @@
-import { HowItWorksContent, HowItWorksIcon } from "@/src/types/howItWorks";
+import { HowItWorksContent, HowItWorksIcon } from "@/types/howItWorks";
 import { Box, Leaf, Sprout, Truck } from "lucide-react";
 import { ElementType } from "react";
 
@@ -15,7 +15,7 @@ const stepIcons: Record<HowItWorksIcon, ElementType> = {
 
 export function HowItWorks({ content }: HowItWorksProps) {
   return (
-    <section className="bg-[var(--color-brand-beige)] px-5 py-10 md:px-8 md:py-12 lg:px-12 lg:py-14">
+    <section className="bg-(--color-brand-beige) px-5 py-10 md:px-8 md:py-12 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-7xl">
         <h2 className="mx-auto mb-8 max-w-8xl text-left section-title-black text-3xl leading-none tracking-[-0.03em] md:mb-10 md:text-4xl">
           {content.title}
@@ -33,25 +33,25 @@ export function HowItWorks({ content }: HowItWorksProps) {
                     <div className="absolute left-7 top-14 h-[calc(100%+24px)] w-px bg-[rgba(184,197,168,0.85)] lg:hidden" />
 
                     {/* Linea orizzontale desktop */}
-                    <div className="absolute left-[64px] top-8 hidden h-px w-[calc(100%-48px)] bg-[rgba(184,197,168,0.75)] lg:block" />
+                    <div className="absolute left-16 top-8 hidden h-px w-[calc(100%-48px)] bg-[rgba(184,197,168,0.75)] lg:block" />
                   </>
                 )}
 
                 <div className="relative z-10 flex items-start gap-4 lg:block">
-                  <div className="flex size-14 shrink-0 items-center justify-center rounded-full border border-[var(--color-brand-border)] bg-[var(--color-brand-beige)] text-[var(--color-brand-dark)]">
+                  <div className="flex size-14 shrink-0 items-center justify-center rounded-full border border-(--color-brand-border) bg-(--color-brand-beige) text-(--color-brand-dark)">
                     <Icon size={26} strokeWidth={1.5} />
                   </div>
 
                   <div className="pt-1 lg:mt-6 lg:pt-0">
-                    <div className="mb-3 flex size-8 items-center justify-center rounded-full border border-[var(--color-brand-border)] bg-[var(--color-brand-beige)] text-sm font-semibold text-[var(--color-brand-green)]">
+                    <div className="mb-3 flex size-8 items-center justify-center rounded-full border border-(--color-brand-border) bg-(--color-brand-beige) text-sm font-semibold text-(--color-brand-green)">
                       {step.number}
                     </div>
 
-                    <h3 className="max-w-[240px] text-sm font-bold leading-snug text-[var(--color-brand-black)]">
+                    <h3 className="max-w-60 text-sm font-bold leading-snug text-(--color-brand-black)">
                       {step.title}
                     </h3>
 
-                    <p className="mt-2 max-w-[280px] text-sm leading-6 text-[var(--color-brand-text)]">
+                    <p className="mt-2 max-w-70 text-sm leading-6 text-(--color-brand-text)">
                       {step.description}
                     </p>
                   </div>

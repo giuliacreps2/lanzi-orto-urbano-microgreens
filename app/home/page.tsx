@@ -8,30 +8,32 @@ import { VideoSection } from "@/components/home/VideoSection";
 import { homeVideos } from "@/constants/video";
 import { howItWorksContent } from "@/constants/howItWorks";
 import { HowItWorks } from "@/components/home/HowItWorks";
-import { B2BPromoSection } from "@/components/home/B2bPromo";
+import { PartnerSection } from "@/components/home/PartnerSection";
 import { b2bPromoContent } from "@/constants/b2bPromo";
 import { Navbar } from "@/components/home/Navbar";
+import { CategoryStrip } from "@/components/home/CategoryStrip";
 
 export default function House() {
   return (
     <main>
       <Navbar />
       <Hero content={heroContent} />
-      <AudienceSection content={audienceContent} />
-      {/*<ProductCarousel
+      <HowItWorks content={howItWorksContent} />
+      <ProductCarousel
         title="I nostri microgreens"
         description="Piccoli germogli, grande intensità. Scegli la varietà perfetta per ogni piatto."
         products={featuredProducts}
-      />*/}
+      />
+      <AudienceSection content={audienceContent} />
+
       <VideoSection
         title="Dal seme al piatto"
-        description="Scopri ogni fase del nostro lavoro: dalla semina alla raccolta, fino all’ispirazione in cucina."
+        description="Scopri ogni fase del nostro lavoro: dalla semina alla raccolta, fino all'ispirazione in cucina."
         videos={homeVideos}
       />
+      <CategoryStrip />
 
-      <HowItWorks content={howItWorksContent} />
-
-      <B2BPromoSection content={b2bPromoContent} />
+      <PartnerSection />
     </main>
   );
 }

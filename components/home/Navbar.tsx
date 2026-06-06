@@ -126,7 +126,7 @@ export function Navbar() {
               {/* CTA mobile */}
               <div className="pt-2 pb-1">
                 <Link href="/shop" className="btn btn-brand w-full">
-                  Ordina ora
+                  ACCEDI/REGISTRATI
                 </Link>
               </div>
             </div>
