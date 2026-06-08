@@ -1,9 +1,10 @@
 import { apiRequest } from "./client";
-import type {
-  AvailabilityStatus,
-  Product,
-  ProductStatus,
-  CompositeProductFormPayload,
+import {
+  type AvailabilityStatus,
+  type Product,
+  type ProductStatus,
+  type CompositeProductFormPayload,
+  ProductDetailResponse,
 } from "@/types/product";
 
 export type CreateProductPayload = {
@@ -36,6 +37,16 @@ export async function updateCompositeProduct(
   return apiRequest<Product>(`/products/composite/${productId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
+    accessToken,
+  });
+}
+
+export async function getProductDetailBySlug(
+  slug: string,
+  accessToken?: string | null,
+) {
+  return apiRequest<ProductDetailResponse>(`/products/${slug}/detail`, {
+    method: "GET",
     accessToken,
   });
 }

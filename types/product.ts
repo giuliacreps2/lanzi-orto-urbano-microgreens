@@ -4,7 +4,7 @@ export type AvailabilityStatus =
   | "PENDING_DELETE"
   | "IN_STOCK"
   | "AVAILABLE"
-  | "UNVAILABLE"
+  | "UNAVAILABLE"
   | "COMING_SOON"
   | "OUT_OF_STOCK";
 
@@ -21,7 +21,7 @@ export type Unit =
   | "CURRENCY"
   | "PIECE"
   | "PACK"
-  | "PORTTION"
+  | "PORTION"
   | "TRAY"
   | "JAR";
 
@@ -90,7 +90,7 @@ export type ProductVariant = {
   activeVariant: boolean;
   netWeight: number;
   unit: Unit;
-  technicalDeatils?: TechnicalDetails;
+  technicalDetails?: TechnicalDetails;
   product?: Product;
 };
 
@@ -105,6 +105,14 @@ export type PriceList = {
   price: number;
   minOrderQuantity?: number;
   clientCategory: ClientCategory;
+};
+
+export type ProductImagePayload = {
+  urlImage: string;
+  altText?: string;
+  sortOrder?: number;
+  isPrimary: boolean;
+  cloudinaryPublicId: string;
 };
 
 export type CompositeProductFormPayload = {
@@ -129,4 +137,42 @@ export type CompositeProductFormPayload = {
   b2cPrice: number;
   b2bPrice: number;
   b2bMinOrderQuantity?: number;
+
+  //AGGIUNTA IMMAGINI
+  images?: ProductImagePayload[];
+
+  tasteNotes?: string;
+  intensity?: number;
+  storage?: string;
+  shelfLifeDays?: number;
+  pairings?: string[];
+  pairingImage?: string;
+  certifications?: string[];
+  expectedHarvest?: string;
+};
+
+//GET/slug
+export type ProductDetailResponse = {
+  product: {
+    productId: string;
+    productName: string;
+    productSlug: string;
+    productDescription: string;
+    shortProductDescription: string;
+    isAvailable: boolean;
+    categoryName: string | null;
+  };
+  variant: {
+    variantId: string;
+    skuVariant: string;
+    netWeight: number;
+    unit: string;
+    technicalDetails: TechnicalDetails;
+  };
+  priceLists: Array<{
+    priceListId: string;
+    price: number;
+    minOrderQuantity: number;
+    clientCategory: ClientCategory;
+  }>;
 };

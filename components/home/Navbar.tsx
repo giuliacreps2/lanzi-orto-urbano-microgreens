@@ -73,7 +73,7 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               {/* CTA sempre visibile */}
               <Link
-                href="/shop"
+                href="/login"
                 className="btn btn-brand hidden sm:inline-flex"
                 style={{
                   height: "38px",
@@ -125,7 +125,7 @@ export function Navbar() {
 
               {/* CTA mobile */}
               <div className="pt-2 pb-1">
-                <Link href="/shop" className="btn btn-brand w-full">
+                <Link href="/login" className="btn btn-brand w-full">
                   ACCEDI/REGISTRATI
                 </Link>
               </div>

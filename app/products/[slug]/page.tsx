@@ -1,15 +1,16 @@
 /**
- * app/products/[slug]/page.tsx
- * Versione STATICA per sviluppo UI — nessuna fetch
- * Sostituire con la versione con fetch quando il backend è pronto
+ * app/products/[slug]/page.tsx — versione statica per sviluppo UI
  */
 
 import Image from "next/image";
 import { Star } from "lucide-react";
 import { PricingBlock } from "@/components/products/PricingBlock";
+import { ProductWhySection } from "@/components/products/ProductWhySection";
+import { ProductHowSection } from "@/components/products/ProductHowSection";
+import { ProductInfoSection } from "@/components/products/ProductInfoSection";
+import { ProductPairingsSection } from "@/components/products/ProductPairingSection";
 import type { ProductPageData } from "@/types/product-types";
 
-/* ── Dati statici ────────────────────────────────────── */
 const MOCK_PRODUCT: ProductPageData = {
   productId: "mock-001",
   slug: "microgreen-senape-wasabi",
@@ -33,19 +34,10 @@ const MOCK_PRODUCT: ProductPageData = {
       namePackType: "Vaschetta Standard",
       unitOfMeasure: "TRAY",
     },
-    technicalDeatils: {
-      taste_notes: "piccante, fresco, pungente",
-      intensity: "3/5",
-      storage: "Conservare in frigo tra 2°C e 6°C",
-      shelf_life_days: "5",
-    },
+    technicalDeatils: {},
   },
   priceLists: [
-    {
-      priceListId: "price-b2c",
-      price: 345,
-      clientCategory: "B2C",
-    },
+    { priceListId: "price-b2c", price: 345, clientCategory: "B2C" },
     {
       priceListId: "price-b2b",
       price: 290,
@@ -64,7 +56,6 @@ const MOCK_PRODUCT: ProductPageData = {
   rating: { score: 5, count: 48 },
 };
 
-/* ── StarRating ──────────────────────────────────────── */
 function StarRating({ score, count }: { score: number; count: number }) {
   return (
     <div className="pd-rating">
@@ -84,54 +75,59 @@ function StarRating({ score, count }: { score: number; count: number }) {
   );
 }
 
-/* ── Page ────────────────────────────────────────────── */
 export default function ProductPage() {
   const product = MOCK_PRODUCT;
 
   return (
-    <main className="navbar-offset pd-page">
-      <div className="pd-inner">
-        {/* ── Colonna sinistra ── */}
-        <div className="pd-left">
-          <p className="eyebrow pd-eyebrow">{product.eyebrow}</p>
-          <h1 className="pd-title">{product.name}</h1>
+    <>
+      <main className="navbar-offset pd-page">
+        <div className="pd-inner">
+          {/* Colonna sinistra */}
+          <div className="pd-left">
+            <p className="eyebrow pd-eyebrow">{product.eyebrow}</p>
+            <h1 className="pd-title">{product.name}</h1>
 
-          {product.rating && (
-            <StarRating
-              score={product.rating.score}
-              count={product.rating.count}
-            />
-          )}
+            {product.rating && (
+              <StarRating
+                score={product.rating.score}
+                count={product.rating.count}
+              />
+            )}
 
-          <p className="body-text pd-description">{product.description}</p>
+            <p className="body-text pd-description">{product.description}</p>
 
-          {/* Gallery */}
-          <div className="pd-gallery">
-            <div className="pd-gallery-main">
-              <div className="pd-gallery-placeholder" />
+            <div className="pd-gallery">
+              <div className="pd-gallery-main">
+                <div className="pd-gallery-placeholder" />
+              </div>
+              <div className="pd-gallery-thumbs">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="pd-gallery-thumb" />
+                ))}
+              </div>
             </div>
-            <div className="pd-gallery-thumbs">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="pd-gallery-thumb" />
+
+            <div className="pd-tags">
+              {product.tags.map((tag) => (
+                <span key={tag.label} className="pd-tag">
+                  {tag.label}
+                </span>
               ))}
             </div>
           </div>
 
-          {/* Tag */}
-          <div className="pd-tags">
-            {product.tags.map((tag) => (
-              <span key={tag.label} className="pd-tag">
-                {tag.label}
-              </span>
-            ))}
+          {/* Colonna destra sticky */}
+          <div className="pd-right">
+            <PricingBlock product={product} role="guest" />
           </div>
         </div>
+      </main>
 
-        {/* ── Colonna destra sticky ── */}
-        <div className="pd-right">
-          <PricingBlock product={product} role="guest" />
-        </div>
-      </div>
-    </main>
+      {/* Sezioni sotto la hero prodotto */}
+      <ProductWhySection />
+      <ProductHowSection />
+      <ProductInfoSection />
+      <ProductPairingsSection />
+    </>
   );
 }

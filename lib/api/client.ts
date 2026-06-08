@@ -42,6 +42,10 @@ export async function apiRequest<T>(
     } catch {
       //errorMessage = await response.text();
       if (responseText) errorMessage = responseText;
+      console.error(
+        "IL BACKEND HA INVIATO UNA RISPOSTA NON VALIDA (O JSON CORROTTO):",
+        responseText,
+      );
     }
     throw new Error(errorMessage);
   }

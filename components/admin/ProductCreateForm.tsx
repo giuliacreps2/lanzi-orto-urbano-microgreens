@@ -1,5 +1,6 @@
 "use client";
 
+import { CldUploadWidget } from "next-cloudinary";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -19,10 +20,16 @@ import type {
   PackagingType,
   ProductCategory,
   ProductCategoryAttribute,
+  ProductImagePayload,
   ProductStatus,
   TechnicalDetails,
   Unit,
 } from "@/types/product";
+
+type CloudinaryUploadProps = {
+  images: ProductImagePayload[];
+  onChange: (images: ProductImagePayload[]) => void;
+};
 
 type ProductFormProps = {
   initialData?: Partial<CompositeProductFormPayload> & {
@@ -33,6 +40,101 @@ type ProductFormProps = {
 };
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
+
+export function CloudinaryUpload({ images, onChange }: CloudinaryUploadProps) {
+  const handleUploadSuccess = (result: any) => {
+    if (result.info && typeof result.info !== "string") {
+      const newImage: ProductImagePayload = {
+        urlImage: result.info.secure_url,
+        cloudinaryPublicId: result.info.public_id,
+        altText: result.info.original_filename || "Immagine prodotto",
+        isPrimary: images.length === 0,
+        sortOrder: images.length,
+      };
+      onChange([...images, newImage]);
+    }
+  };
+
+  const removeImage = (publicId: string) => {
+    const updated = images.filter((img) => img.cloudinaryPublicId != publicId);
+    if (
+      images.find((img) => img.cloudinaryPublicId === publicId)?.isPrimary &&
+      updated.length > 0
+    ) {
+      updated[0].isPrimary = true;
+    }
+    onChange(updated);
+  };
+
+  const setPrimary = (publicId: string) => {
+    const updated = images.map((img) => ({
+      ...img,
+      isPrimary: img.cloudinaryPublicId === publicId,
+    }));
+    onChange(updated);
+  };
+
+  return (
+    <div className="space-y-4 border p-4 rounded-lg bg-card/50">
+      <h3 className="text-sm font-semibold">Galleria Immagini Prodotto</h3>
+
+      {/* Griglia Anteprime */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {images.map((img) => (
+          <div
+            key={img.cloudinaryPublicId}
+            className="relative group border rounded-md overflow-hidden aspect-square bg-muted"
+          >
+            <img
+              src={img.urlImage}
+              alt={img.altText}
+              className="object-cover w-full h-full"
+            />
+
+            {/* Badge Immagine Primaria */}
+            {img.isPrimary && (
+              <span className="absolute top-1 left-1 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">
+                Principale
+              </span>
+            )}
+
+            {/* Overlay Azioni al passaggio del mouse */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 transition-opacity">
+              {!img.isPrimary && (
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={() => setPrimary(img.cloudinaryPublicId)}
+                >
+                  Metti in evidenza
+                </Button>
+              )}
+              <Button
+                variant="adminOutline"
+                type="button"
+                onClick={() => removeImage(img.cloudinaryPublicId)}
+              >
+                Rimuovi
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Bottone di Upload legato a Cloudinary */}
+      <CldUploadWidget
+        uploadPreset="lanzi_orto_urbano_presets" // Imposta il tuo preset su Cloudinary impostandolo su "unsigned"
+        onSuccess={handleUploadSuccess}
+      >
+        {({ open }) => (
+          <Button type="button" variant="adminOutline" onClick={() => open()}>
+            Carica Foto (Cloudinary)
+          </Button>
+        )}
+      </CldUploadWidget>
+    </div>
+  );
+}
 
 function getTemporaryToken() {
   if (typeof window === "undefined") return null;
@@ -133,9 +235,11 @@ function getInputType(attrType: AttributeType) {
 
 export default function ProductCreateForm({
   initialData,
-  isEdit = false,
+  isEdit,
 }: ProductFormProps) {
   const router = useRouter();
+
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
 
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [attributes, setAttributes] = useState<ProductCategoryAttribute[]>([]);
@@ -357,6 +461,21 @@ export default function ProductCreateForm({
         b2bMinOrderQuantity: b2bMinOrderQuantity
           ? Number(b2bMinOrderQuantity)
           : undefined,
+
+        tasteNotes: technicalDetails["taste_notes"] as string | undefined,
+        intensity: technicalDetails["intensity"] as number | undefined,
+        storage: technicalDetails["storage"] as string | undefined,
+        shelfLifeDays: technicalDetails["shelf_life_days"] as
+          | number
+          | undefined,
+        pairings: technicalDetails["pairings"] as string[] | undefined,
+        pairingImage: technicalDetails["pairing_image"] as string | undefined,
+        certifications: technicalDetails["certifications"] as
+          | string[]
+          | undefined,
+        expectedHarvest: technicalDetails["expected_harvest"] as
+          | string
+          | undefined,
       };
 
       if (isEdit && initialData?.productId) {
