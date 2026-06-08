@@ -67,6 +67,8 @@ export default function AdminOrderDetailPage({
         accessToken,
       );
 
+      console.log("LABELS:", JSON.stringify(generatedLabels, null, 2));
+
       setLabels(generatedLabels);
       setIsLabelsModalOpen(true);
 
@@ -244,12 +246,12 @@ export default function AdminOrderDetailPage({
         </aside>
       </div>
 
-      {isLabelsModalOpen && (
-        <BulkLabelPrinter
-          labels={labels}
-          onClose={() => setIsLabelsModalOpen(false)}
-        />
-      )}
+      <StartSowingLabelModal
+        orderId={orderId}
+        labels={labels}
+        isOpen={isLabelsModalOpen}
+        onClose={() => setIsLabelsModalOpen(false)}
+      />
     </div>
   );
 }

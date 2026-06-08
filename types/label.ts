@@ -7,6 +7,8 @@ export type LabelDTO = {
   exitDate: string;
   inventoryDecremented: boolean;
   printedAt?: string | null;
+  eanCode?: string;
+  productName: string;
 
   orderItem?: {
     orderItemId: string;
