@@ -84,8 +84,8 @@ function mapToPageData(raw: RawProductResponse): ProductPageData {
     : { kind: "stock", leadTimeHours: 48 };
 
   // Tag da technicalDetails della variante
-  const tags = raw.variant.technicalDeatils
-    ? Object.entries(raw.variant.technicalDeatils)
+  const tags = raw.variant.technicalDetails
+    ? Object.entries(raw.variant.technicalDetails)
         .filter(([, v]) => typeof v === "string" && v.length < 30)
         .map(([, v]) => ({ label: String(v) }))
     : [];

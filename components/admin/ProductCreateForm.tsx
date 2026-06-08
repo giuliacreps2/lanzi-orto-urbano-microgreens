@@ -1,9 +1,10 @@
 "use client";
 
-import { CldUploadWidget } from "next-cloudinary";
+import { CloudinaryUpload } from "@/components/admin/products/CloudinaryUpload";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useRef } from "react";
 
 import {
   createCompositeProduct,
@@ -41,99 +42,54 @@ type ProductFormProps = {
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
-export function CloudinaryUpload({ images, onChange }: CloudinaryUploadProps) {
-  const handleUploadSuccess = (result: any) => {
-    if (result.info && typeof result.info !== "string") {
-      const newImage: ProductImagePayload = {
-        urlImage: result.info.secure_url,
-        cloudinaryPublicId: result.info.public_id,
-        altText: result.info.original_filename || "Immagine prodotto",
-        isPrimary: images.length === 0,
-        sortOrder: images.length,
-      };
-      onChange([...images, newImage]);
-    }
-  };
+function parseListValue(value: string) {
+  return value
+    .split(/\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
-  const removeImage = (publicId: string) => {
-    const updated = images.filter((img) => img.cloudinaryPublicId != publicId);
-    if (
-      images.find((img) => img.cloudinaryPublicId === publicId)?.isPrimary &&
-      updated.length > 0
-    ) {
-      updated[0].isPrimary = true;
-    }
-    onChange(updated);
-  };
-
-  const setPrimary = (publicId: string) => {
-    const updated = images.map((img) => ({
-      ...img,
-      isPrimary: img.cloudinaryPublicId === publicId,
-    }));
-    onChange(updated);
-  };
+function isListAttribute(key: string, type: AttributeType) {
+  const normalizedType = String(type).toUpperCase();
 
   return (
-    <div className="space-y-4 border p-4 rounded-lg bg-card/50">
-      <h3 className="text-sm font-semibold">Galleria Immagini Prodotto</h3>
-
-      {/* Griglia Anteprime */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {images.map((img) => (
-          <div
-            key={img.cloudinaryPublicId}
-            className="relative group border rounded-md overflow-hidden aspect-square bg-muted"
-          >
-            <img
-              src={img.urlImage}
-              alt={img.altText}
-              className="object-cover w-full h-full"
-            />
-
-            {/* Badge Immagine Primaria */}
-            {img.isPrimary && (
-              <span className="absolute top-1 left-1 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">
-                Principale
-              </span>
-            )}
-
-            {/* Overlay Azioni al passaggio del mouse */}
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 transition-opacity">
-              {!img.isPrimary && (
-                <Button
-                  variant="secondary"
-                  type="button"
-                  onClick={() => setPrimary(img.cloudinaryPublicId)}
-                >
-                  Metti in evidenza
-                </Button>
-              )}
-              <Button
-                variant="adminOutline"
-                type="button"
-                onClick={() => removeImage(img.cloudinaryPublicId)}
-              >
-                Rimuovi
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Bottone di Upload legato a Cloudinary */}
-      <CldUploadWidget
-        uploadPreset="lanzi_orto_urbano_presets" // Imposta il tuo preset su Cloudinary impostandolo su "unsigned"
-        onSuccess={handleUploadSuccess}
-      >
-        {({ open }) => (
-          <Button type="button" variant="adminOutline" onClick={() => open()}>
-            Carica Foto (Cloudinary)
-          </Button>
-        )}
-      </CldUploadWidget>
-    </div>
+    normalizedType === "ARRAY" ||
+    normalizedType === "LIST" ||
+    normalizedType === "MULTI_SELECT" ||
+    normalizedType === "MULTISELECT" ||
+    key === "pairings" ||
+    key === "certifications"
   );
+}
+
+function convertInputValue(
+  key: string,
+  type: AttributeType,
+  value: string | boolean,
+) {
+  const normalizedType = String(type).toUpperCase();
+
+  if (normalizedType === "BOOLEAN") {
+    return Boolean(value);
+  }
+
+  if (normalizedType === "NUMBER" || normalizedType === "CURRENCY") {
+    if (value === "") return null;
+    return Number(value);
+  }
+
+  if (typeof value === "string" && isListAttribute(key, type)) {
+    return parseListValue(value);
+  }
+
+  return String(value);
+}
+
+function formatTechnicalValue(value: unknown) {
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "string" || typeof value === "number") return value;
+  if (typeof value === "boolean") return value ? "true" : "false";
+  return "";
 }
 
 function getTemporaryToken() {
@@ -210,17 +166,6 @@ function normalizePageResponse<T>(data: T[] | { content?: T[] }) {
   return data.content ?? [];
 }
 
-function convertInputValue(type: AttributeType, value: string | boolean) {
-  if (type === "BOOLEAN") return Boolean(value);
-
-  if (type === "NUMBER" || type === "CURRENCY") {
-    if (value === "") return null;
-    return Number(value);
-  }
-
-  return String(value);
-}
-
 function getInputType(attrType: AttributeType) {
   switch (attrType) {
     case "NUMBER":
@@ -237,9 +182,12 @@ export default function ProductCreateForm({
   initialData,
   isEdit,
 }: ProductFormProps) {
+  const initialLoadDone = useRef(false);
   const router = useRouter();
 
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
+  const [images, setImages] = useState<ProductImagePayload[]>(
+    initialData?.images ?? [],
+  );
 
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [attributes, setAttributes] = useState<ProductCategoryAttribute[]>([]);
@@ -344,49 +292,96 @@ export default function ProductCreateForm({
     }
   }, [skuSuggestion, skuEditedManually]);
 
+  // Effect caricamento iniziale
   useEffect(() => {
     async function loadInitialData() {
       try {
         const token = getTemporaryToken();
-
-        const [categoriesResponse, packagingResponse] = await Promise.all([
-          getProductCategories(token),
-          getPackagingType(token),
-        ]);
-
-        const nextCategories = normalizePageResponse(categoriesResponse);
-        const nextPackagingTypes = normalizePageResponse(packagingResponse);
-
+        const categoriesResponse = await getProductCategories(token);
+        const nextCategories =
+          normalizePageResponse<ProductCategory>(categoriesResponse);
         setCategories(nextCategories);
-        setPackagingTypes(nextPackagingTypes);
 
-        if (!productCategoryId && nextCategories[0]) {
-          setProductCategoryId(nextCategories[0].productCategoryId);
-        }
+        console.log("✅ Categorie ricevute:", nextCategories);
+        console.log("✅ Numero categorie:", nextCategories.length);
 
-        if (!packTypeId && nextPackagingTypes[0]) {
-          setPackTypeId(nextPackagingTypes[0].packTypeId);
+        const targetCategoryId =
+          initialData?.productCategoryId ||
+          nextCategories[0]?.productCategoryId;
+
+        if (targetCategoryId) {
+          setProductCategoryId(targetCategoryId);
+
+          console.log("📡 Chiamo attributi per:", targetCategoryId);
+          const attrResponse = await getAttributesByCategory(
+            targetCategoryId,
+            token,
+          );
+          const nextAttributes = normalizePageResponse(attrResponse);
+          setAttributes(nextAttributes);
+          console.log("✅ Attributi ricevuti:", nextAttributes);
+          console.log("✅ Numero attributi:", nextAttributes.length);
+          console.log(
+            "📦 Attributi RAW response:",
+            JSON.stringify(attrResponse),
+          );
+
+          const initialDetails: TechnicalDetails = {};
+          nextAttributes.forEach((attribute) => {
+            initialDetails[attribute.prodCatAttributeKey] =
+              initialData?.technicalDetails?.[attribute.prodCatAttributeKey] ??
+              attribute.defaultValue ??
+              "";
+          });
+          setTechnicalDetails(initialDetails);
+
+          // Segnala che il caricamento iniziale è completato
+          initialLoadDone.current = true;
+          console.log("🏁 initialLoadDone settato a true");
         }
       } catch (error) {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Errore durante il caricamento dei dati iniziali",
+          error instanceof Error ? error.message : "Errore caricamento",
         );
+      }
+
+      try {
+        const token = getTemporaryToken();
+        const packagingResponse = await getPackagingType(token);
+        const nextPackagingTypes = normalizePageResponse(packagingResponse);
+        setPackagingTypes(nextPackagingTypes);
+        if (nextPackagingTypes.length > 0) {
+          setPackTypeId(
+            (current) => current || nextPackagingTypes[0].packTypeId,
+          );
+        }
+      } catch (error) {
+        console.error("Errore packaging:", error);
       }
     }
 
     loadInitialData();
-  }, [packTypeId, productCategoryId]);
+  }, []);
 
+  // Effect SOLO per cambio manuale categoria
   useEffect(() => {
-    async function loadAttributes() {
-      if (!productCategoryId) {
-        setAttributes([]);
-        setTechnicalDetails({});
-        return;
-      }
+    // Salta il primo trigger causato dal mount/loadInitialData
+    console.log(
+      "🔄 Effect categoria triggerato, productCategoryId:",
+      productCategoryId,
+    );
+    console.log("🔄 initialLoadDone.current:", initialLoadDone.current);
 
+    if (!initialLoadDone.current) {
+      console.log("⏭️ Skip: caricamento iniziale non ancora completato");
+      return;
+    }
+    if (!productCategoryId) {
+      console.log("⏭️ Skip: nessuna categoria selezionata");
+      return;
+    }
+
+    async function loadAttributes() {
       try {
         const token = getTemporaryToken();
         const response = await getAttributesByCategory(
@@ -394,30 +389,31 @@ export default function ProductCreateForm({
           token,
         );
         const nextAttributes = normalizePageResponse(response);
-
         setAttributes(nextAttributes);
 
-        const initialDetails: TechnicalDetails = {};
-
-        nextAttributes.forEach((attribute) => {
-          initialDetails[attribute.prodCatAttributeKey] =
-            initialData?.technicalDetails?.[attribute.prodCatAttributeKey] ??
-            attribute.defaultValue ??
-            "";
+        setTechnicalDetails((current) => {
+          const details: TechnicalDetails = {};
+          nextAttributes.forEach((attribute) => {
+            const key = attribute.prodCatAttributeKey;
+            details[key] =
+              current[key] ??
+              initialData?.technicalDetails?.[key] ??
+              attribute.defaultValue ??
+              "";
+          });
+          return details;
         });
-
-        setTechnicalDetails(initialDetails);
       } catch (error) {
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Errore durante il caricamento dei campi tecnici",
-        );
+        console.error("Errore attributi:", error);
       }
     }
 
     loadAttributes();
-  }, [productCategoryId, initialData?.technicalDetails]);
+    console.log(
+      "🚀 Carico attributi per cambio manuale categoria:",
+      productCategoryId,
+    );
+  }, [productCategoryId]);
 
   function updateTechnicalDetail(
     key: string,
@@ -426,7 +422,7 @@ export default function ProductCreateForm({
   ) {
     setTechnicalDetails((current) => ({
       ...current,
-      [key]: convertInputValue(attrType, value),
+      [key]: convertInputValue(key, attrType, value),
     }));
   }
 
@@ -438,6 +434,14 @@ export default function ProductCreateForm({
 
     try {
       const token = getTemporaryToken();
+      const getSafeArray = (key: string) => {
+        const val = technicalDetails[key];
+        if (Array.isArray(val)) return val;
+        if (typeof val === "string" && val.trim() !== "") {
+          return parseListValue(val);
+        }
+        return undefined;
+      };
 
       const payload: CompositeProductFormPayload = {
         productName,
@@ -448,6 +452,8 @@ export default function ProductCreateForm({
         productIsAvailable,
         productStatus,
         productCategoryId,
+
+        images: Array.isArray(images) ? images : [],
 
         skuVariant,
         activeVariant: productStatus === "ACTIVE",
@@ -468,11 +474,9 @@ export default function ProductCreateForm({
         shelfLifeDays: technicalDetails["shelf_life_days"] as
           | number
           | undefined,
-        pairings: technicalDetails["pairings"] as string[] | undefined,
+        pairings: getSafeArray("pairings"),
+        certifications: getSafeArray("certifications"),
         pairingImage: technicalDetails["pairing_image"] as string | undefined,
-        certifications: technicalDetails["certifications"] as
-          | string[]
-          | undefined,
         expectedHarvest: technicalDetails["expected_harvest"] as
           | string
           | undefined,
@@ -581,6 +585,22 @@ export default function ProductCreateForm({
                 ))}
               </select>
             </label>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <div>
+            <h2 className="text-base font-semibold text-zinc-950">
+              Immagini prodotto
+            </h2>
+            <p className="mt-1 text-sm text-zinc-500">
+              Carica una o più immagini. La prima immagine caricata viene
+              impostata come principale.
+            </p>
+          </div>
+
+          <div className="mt-5">
+            <CloudinaryUpload images={images} onChange={setImages} />
           </div>
         </section>
 
@@ -744,11 +764,7 @@ export default function ProductCreateForm({
                     <div className="flex gap-2">
                       <input
                         type={getInputType(attribute.attrType)}
-                        value={
-                          typeof value === "string" || typeof value === "number"
-                            ? value
-                            : ""
-                        }
+                        value={formatTechnicalValue(value)}
                         required={isRequired}
                         min={attribute.minValue ?? undefined}
                         max={attribute.maxValue ?? undefined}

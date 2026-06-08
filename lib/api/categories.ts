@@ -8,17 +8,20 @@ export type CreateProductCategoryPayload = {
 };
 
 export async function getProductCategories(accessToken?: string | null) {
-  return apiRequest<ProductCategory[]>("/categories", {
-    method: "GET",
-    accessToken,
-  });
+  return apiRequest<ProductCategory[] | { content?: ProductCategory[] }>(
+    "/categories",
+    {
+      method: "GET",
+      accessToken,
+    },
+  );
 }
 
 export async function createProductCategory(
   payload: CreateProductCategoryPayload,
   accessToken?: string | null,
 ) {
-  return apiRequest<ProductCategory>("/categories/new-cat", {
+  return apiRequest<ProductCategory>("/product-categories/new-cat", {
     method: "POST",
     body: JSON.stringify(payload),
     accessToken,
