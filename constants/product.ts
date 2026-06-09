@@ -3,8 +3,8 @@ import type { Product } from "../types/product";
 export const featuredProducts: Product[] = [
   {
     productId: "11111111-1111-1111-1111-111111111111",
-    productName: "Ravanello",
-    productSlug: "ravanello",
+    productName: "Rucola",
+    productSlug: "/products/microgreen-rucola",
     productDescription:
       "Microgreens di Ravanello freschi coltivati in idroponica urbana.",
     shortProductDescription: "Gusto fresco e leggermente piccante.",
@@ -24,7 +24,7 @@ export const featuredProducts: Product[] = [
         alt: "Microgreens di ravanello",
       },
       tags: [{ label: "Piccante" }, { label: "Per insalate" }],
-      href: "/prodotti/ravanello",
+      href: "/products/microgreen-rucola",
       price: "3,50", // Se la card leggeva direttamente questa stringa per la conversione rapida
     } as any),
   },

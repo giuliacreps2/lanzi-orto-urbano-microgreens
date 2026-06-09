@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/types/store/authStore";
+import type { UserRole } from "@/types/store/authStore";
 
 export default function FormLogin() {
   const router = useRouter();
+  const setAuth = useAuthStore((s) => s.setAuth);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState("");
@@ -32,6 +35,15 @@ export default function FormLogin() {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       const loggedUser = data.user;
+
+      setAuth({
+        token: data.accessToken,
+        userId: loggedUser.userId,
+        email: loggedUser.email,
+        accountType:
+          (loggedUser.accountType?.toLowerCase() as UserRole) ?? "guest",
+        b2bStatus: loggedUser.b2bStatus ?? null,
+      });
 
       if (loggedUser.roles.includes("ADMIN")) {
         router.push("/home");

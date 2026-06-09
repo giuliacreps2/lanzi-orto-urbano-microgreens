@@ -1,10 +1,12 @@
 "use client";
-
+import { useAuthStore } from "@/types/store/authStore";
+import type { UserRole } from "@/types/store/authStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function FormLogin() {
   const router = useRouter();
+  const setAuth = useAuthStore((s) => s.setAuth); // ✅ TOP LEVEL, non dentro handleSubmit
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState("");
@@ -26,20 +28,25 @@ export default function FormLogin() {
         throw new Error(data.message || "Errore durante il login");
       }
 
-      console.log("LOGIN EFFETTUATO", data);
-
-      localStorage.setItem("token", data.accessToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
       const loggedUser = data.user;
 
+      setAuth({
+        token: data.accessToken,
+        userId: loggedUser.userId,
+        email: loggedUser.email,
+        accountType:
+          (loggedUser.accountType?.toLowerCase() as UserRole) ?? "guest",
+        b2bStatus: loggedUser.b2bStatus ?? null,
+      });
+
+      // Routing
       if (loggedUser.roles.includes("ADMIN")) {
         router.push("/admin");
       } else if (
         loggedUser.accountType === "B2B" &&
         loggedUser.b2bStatus === "APPROVED"
       ) {
-        router.push("/home");
+        router.push("/b2b/dashboard"); // ✅ dashboard B2B
       } else if (
         loggedUser.accountType === "B2B" &&
         loggedUser.b2bStatus === "PENDING"
@@ -49,6 +56,7 @@ export default function FormLogin() {
         router.push("/home");
       }
     } catch (err) {
+      // ✅ catch non più vuoto
       if (err instanceof Error) {
         setErrors(err.message);
       } else {

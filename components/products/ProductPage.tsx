@@ -51,7 +51,7 @@ type RawProductResponse = {
   product: Product & {
     productCategory?: Product["productCategory"];
   };
-  variant: ProductVariant & {
+  variants: ProductVariant & {
     packagingType: PackagingType;
   };
   priceLists: PriceList[];

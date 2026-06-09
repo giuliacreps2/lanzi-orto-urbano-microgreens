@@ -27,12 +27,31 @@ export type DeliveryInfo =
   | { kind: "harvest"; expectedHarvest: string } // ISO date
   | { kind: "stock"; leadTimeHours: number };
 
-/**
- * Aggregato che il frontend usa nella pagina prodotto.
- * Viene costruito dal server (page.tsx) partendo dai dati raw del backend.
- */
+export type PriceEntry = {
+  priceListId: string;
+  price: number;
+  minOrderQuantity: number;
+  clientCategory: ClientCategory;
+};
+
+export type PackagingInfo = {
+  packTypeId: string;
+  namePackType: string;
+  unitoOfMeasure: string;
+};
+
+export type VariantData = {
+  variantId: string;
+  skuVariant: string;
+  activeVariant: boolean;
+  netWeight: number;
+  unit: "GRAMS" | "KG" | "TRAY" | "JAR" | string;
+  packagingType: PackagingInfo;
+  technicalDetails: Record<string, unknown>;
+  priceLists: PriceEntry[];
+};
+
 export type ProductPageData = {
-  /** Da Product */
   productId: string;
   slug: string;
   name: string;
@@ -41,7 +60,6 @@ export type ProductPageData = {
   availabilityStatus: Product["availabilityStatus"];
   isAvailable: boolean;
 
-  /** Eyebrow derivato da productCategory.nameProdCategory */
   eyebrow: string;
 
   /** Immagini (gestite separatamente, non nel backend attuale) */
@@ -51,15 +69,7 @@ export type ProductPageData = {
   tags: { label: string }[];
 
   /** Variante attiva */
-  variant: ProductVariant & {
-    packagingType: PackagingType;
-  };
-
-  /**
-   * Listino prezzi — array da PriceList.
-   * Di solito 2 voci: una B2C, una B2B.
-   */
-  priceLists: PriceList[];
+  variants: VariantData[];
 
   /**
    * IVA applicabile (es. 0.04 = 4%).
@@ -77,21 +87,40 @@ export type ProductPageData = {
   subscriptionFrequencies?: SubscriptionFrequency[];
 
   /** Recensioni (gestite separatamente) */
-  rating?: { score: number; count: number };
+  rating?: { score: number; count: number } | null;
 };
 
 /* ── Helper: estrai i prezzi dal listino ────────────── */
 
 export function getPriceForRole(
-  priceLists: PriceList[],
+  priceLists: PriceEntry[],
   clientCategory: ClientCategory,
 ): PriceList | undefined {
   return priceLists.find((p) => p.clientCategory === clientCategory);
 }
 
 export function getMinOrder(
-  priceLists: PriceList[],
+  priceLists: PriceEntry[],
   clientCategory: ClientCategory,
 ): number {
   return getPriceForRole(priceLists, clientCategory)?.minOrderQuantity ?? 1;
 }
+
+export type WhyCard = {
+  title: string;
+  description: string;
+};
+
+export type HowItem = {
+  title: string;
+  description: string;
+};
+
+export type RelatedProduct = {
+  slug: string;
+  name: string;
+  description: string;
+  price: string;
+  imageSrc: string;
+  imageAlt: string;
+};

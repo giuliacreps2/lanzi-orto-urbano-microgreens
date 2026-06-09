@@ -1,5 +1,5 @@
 "use client";
-
+import { useAuth } from "@/types/hook/useAuth";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -106,14 +106,28 @@ type PricingBlockProps = {
   role: UserRole;
 };
 
-export function PricingBlock({ product, role }: PricingBlockProps) {
-  const isB2B = role === "b2b";
-  const isGuest = role === "guest";
+export function PricingBlock({ product }: { product: ProductPageData }) {
+  const { accountType } = useAuth();
 
   /* Listino corretto in base al ruolo */
+  const isB2B = accountType === "b2b";
+  const isGuest = accountType === "guest";
+
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    product.variants[0]?.variantId ?? "",
+  );
+
+  const selectedVariant =
+    product.variants.find((v) => v.variantId === selectedVariantId) ??
+    product.variants[0];
+
   const clientCategory = isB2B ? "B2B" : "B2C";
-  const priceEntry = getPriceForRole(product.priceLists, clientCategory);
-  const minOrder = getMinOrder(product.priceLists, clientCategory);
+
+  const priceEntry = getPriceForRole(
+    selectedVariant.priceLists,
+    clientCategory,
+  );
+  const minOrder = getMinOrder(selectedVariant.priceLists, clientCategory);
 
   const [qty, setQty] = useState(minOrder);
   const [subscriptionEnabled, setSubscriptionEnabled] = useState(false);
@@ -131,14 +145,41 @@ export function PricingBlock({ product, role }: PricingBlockProps) {
 
   /* Label unità di misura dalla variante */
   const unitLabel =
-    product.variant.unit === "TRAY"
+    selectedVariant.unit === "TRAY"
       ? "vaschetta"
-      : product.variant.unit === "JAR"
+      : selectedVariant.unit === "JAR"
         ? "vasetto"
         : "confezione";
 
   return (
     <div className="pb-root">
+      {/* ── Selettore variante — solo se più di una ── */}
+      {product.variants.length > 1 && (
+        <div className="pb-field">
+          <p className="pb-field-label">Formato</p>
+          <div className="pb-variant-list">
+            {product.variants.map((v) => (
+              <button
+                key={v.variantId}
+                type="button"
+                onClick={() => {
+                  setSelectedVariantId(v.variantId);
+                  setQty(getMinOrder(v.priceLists, clientCategory));
+                }}
+                className={`pb-variant-btn ${
+                  v.variantId === selectedVariantId
+                    ? "pb-variant-btn--active"
+                    : ""
+                }`}
+              >
+                {v.packagingType.namePackType} · {v.netWeight}
+                {v.unit === "GRAMS" ? "g" : v.unit.toLowerCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Prezzo principale ── */}
       <div className="pb-price-section">
         <p className="pb-price-label">
@@ -172,17 +213,17 @@ export function PricingBlock({ product, role }: PricingBlockProps) {
         </div>
       )}
 
-      {/* ── Confezionamento (info, non selettore: una sola variante per prodotto) ── */}
+      {/* ── Confezionamento ── */}
       <div className="pb-field">
         <p className="pb-field-label">Confezionamento</p>
         <div className="pb-packaging-info">
           <span className="pb-packaging-badge">
-            {product.variant.packagingType.namePackType}
+            {selectedVariant.packagingType.namePackType}
             {" · "}
-            {product.variant.netWeight}
-            {product.variant.unit === "GRAMS"
+            {selectedVariant.netWeight}
+            {selectedVariant.unit === "GRAMS"
               ? "g"
-              : product.variant.unit.toLowerCase()}
+              : selectedVariant.unit.toLowerCase()}
           </span>
         </div>
       </div>

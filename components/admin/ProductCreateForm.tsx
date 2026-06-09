@@ -728,6 +728,7 @@ export default function ProductCreateForm({
                 const isRequired =
                   (attribute as { required?: boolean }).required ?? false;
 
+                // ── BOOLEAN → checkbox ──
                 if (attribute.attrType === "BOOLEAN") {
                   return (
                     <label
@@ -751,6 +752,78 @@ export default function ProductCreateForm({
                   );
                 }
 
+                // ── LISTA (pairings, certifications) → textarea ──
+                const isListField =
+                  key === "pairings" || key === "certifications";
+                if (isListField) {
+                  return (
+                    <label
+                      key={attribute.prodCatAttributeId}
+                      className="grid gap-1.5 sm:col-span-2"
+                    >
+                      <span className="text-sm font-medium text-zinc-700">
+                        {attribute.prodCatAttributeLabel}
+                      </span>
+                      <textarea
+                        rows={3}
+                        value={formatTechnicalValue(value)}
+                        placeholder={
+                          key === "pairings"
+                            ? "Es. Salmone affumicato, Carpaccio di manzo, Tartare di tonno"
+                            : "Es. Bio, Senza OGM, Km0"
+                        }
+                        onChange={(event) =>
+                          updateTechnicalDetail(
+                            key,
+                            attribute.attrType,
+                            event.target.value,
+                          )
+                        }
+                        className="rounded-xl border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400"
+                      />
+                      <span className="text-xs text-zinc-400">
+                        {key === "pairings"
+                          ? "Inserisci gli abbinamenti separati da virgola — verranno mostrati come lista nella pagina prodotto."
+                          : "Inserisci le certificazioni separate da virgola."}
+                      </span>
+                    </label>
+                  );
+                }
+
+                // ── TUTTI GLI ALTRI → input ──
+                const PLACEHOLDERS: Record<string, string> = {
+                  flavor: "Es. Piccante, fresco, leggermente pungente",
+                  color: "Es. Verde brillante con steli porpora",
+                  texture: "Es. Croccante e succosa, con foglioline tenere",
+                  nutrients: "Es. Vitamine A, C, K, folati e antiossidanti",
+                  storage:
+                    "Es. Conservare tra 2°C e 6°C, non lavare prima dell'uso",
+                  origin: "Es. Coltivazione indoor, Milano",
+                  taste_notes: "Es. Note piccanti con retrogusto fresco",
+                  variety: "Es. Brassica juncea",
+                  tray_size: "Es. 8x8, 12x10",
+                  substrate_type: "Es. Fibra di cocco, Torba",
+                  benefit_1_title: "Es. Gusto deciso e rinfrescante",
+                  benefit_1_text:
+                    "Es. Un tocco piccante che esalta ogni preparazione",
+                  benefit_2_title: "Es. Versatile e creativo",
+                  benefit_2_text: "Es. Perfetto per insalate, panini e bowl",
+                  benefit_3_title: "Es. Freschezza assicurata",
+                  benefit_3_text:
+                    "Es. Raccolto al momento giusto per il massimo sapore",
+                  benefit_4_title: "Es. Colore che fa la differenza",
+                  benefit_4_text:
+                    "Es. Steli colorati per piatti belli quanto buoni",
+                  use_1_title: "Es. Sushi & Sashimi",
+                  use_1_text:
+                    "Es. Sostituisci la pasta di wasabi con i microgreens freschi",
+                  use_2_title: "Es. Power Salads",
+                  use_2_text:
+                    "Es. Aggiunge croccantezza e nutrienti alle tue bowl",
+                  use_3_title: "Es. Sandwiches Gourmet",
+                  use_3_text: "Es. Perfetto con salmone affumicato o avocado",
+                };
+
                 return (
                   <label
                     key={attribute.prodCatAttributeId}
@@ -760,7 +833,6 @@ export default function ProductCreateForm({
                       {attribute.prodCatAttributeLabel}
                       {isRequired ? " *" : ""}
                     </span>
-
                     <div className="flex gap-2">
                       <input
                         type={getInputType(attribute.attrType)}
@@ -768,6 +840,7 @@ export default function ProductCreateForm({
                         required={isRequired}
                         min={attribute.minValue ?? undefined}
                         max={attribute.maxValue ?? undefined}
+                        placeholder={PLACEHOLDERS[key]}
                         onChange={(event) =>
                           updateTechnicalDetail(
                             key,
@@ -777,7 +850,6 @@ export default function ProductCreateForm({
                         }
                         className="h-10 min-w-0 flex-1 rounded-xl border border-zinc-200 px-3 text-sm outline-none focus:border-zinc-400"
                       />
-
                       {attribute.unit && (
                         <span className="inline-flex h-10 items-center rounded-xl border border-zinc-200 bg-zinc-50 px-3 text-sm text-zinc-500">
                           {attribute.unit}
@@ -929,26 +1001,63 @@ export default function ProductCreateForm({
           )}
 
           <div className="mt-5 flex flex-col gap-2">
-            <Button
-              type="submit"
-              variant="admin"
-              disabled={status === "loading"}
-            >
-              {status === "loading"
-                ? "Salvataggio..."
-                : isEdit
-                  ? "Salva modifiche"
-                  : "Salva prodotto"}
-            </Button>
-
-            <Button
-              type="button"
-              variant="adminOutline"
-              onClick={() => router.back()}
-              disabled={status === "loading"}
-            >
-              Annulla
-            </Button>
+            {isEdit ? (
+              // Modalità modifica
+              <>
+                <Button
+                  type="submit"
+                  variant="admin"
+                  disabled={status === "loading"}
+                >
+                  {status === "loading"
+                    ? "Salvataggio..."
+                    : "💾 Salva modifiche"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="adminOutline"
+                  onClick={() => router.back()}
+                  disabled={status === "loading"}
+                >
+                  Annulla
+                </Button>
+              </>
+            ) : (
+              // Modalità creazione
+              <>
+                <Button
+                  type="submit"
+                  variant="admin"
+                  disabled={status === "loading"}
+                  onClick={() => {
+                    /* submit normale → va a /admin/products */
+                  }}
+                >
+                  {status === "loading" ? "Salvataggio..." : "Salva"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="adminOutline"
+                  disabled={status === "loading"}
+                  onClick={async (e) => {
+                    // Salva e resta nel form per aggiungere un'altra variante
+                    // Per ora redirect al prodotto appena creato
+                    const form = (e.target as HTMLElement).closest("form");
+                    form?.requestSubmit();
+                  }}
+                >
+                  {status === "loading" ? "Salvataggio..." : "Salva modifiche"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="adminOutline"
+                  onClick={() => router.back()}
+                  disabled={status === "loading"}
+                >
+                  Annulla
+                </Button>
+              </>
+            )}
           </div>
         </section>
       </aside>

@@ -1,60 +1,15 @@
-/**
- * app/products/[slug]/page.tsx — versione statica per sviluppo UI
- */
-
-import Image from "next/image";
-import { Star } from "lucide-react";
+import { getProductDetail, getRelatedProducts } from "@/lib/api/products";
+import { mapProductDetailToPageData } from "@/lib/mappers/productMapper";
 import { PricingBlock } from "@/components/products/PricingBlock";
 import { ProductWhySection } from "@/components/products/ProductWhySection";
 import { ProductHowSection } from "@/components/products/ProductHowSection";
 import { ProductInfoSection } from "@/components/products/ProductInfoSection";
 import { ProductPairingsSection } from "@/components/products/ProductPairingSection";
-import type { ProductPageData } from "@/types/product-types";
+import { Star } from "lucide-react";
+import { notFound } from "next/navigation";
+import type { WhyCard, HowItem, RelatedProduct } from "@/types/product-types";
 
-const MOCK_PRODUCT: ProductPageData = {
-  productId: "mock-001",
-  slug: "microgreen-senape-wasabi",
-  name: "Microgreens Senape Wasabi",
-  eyebrow: "Microgreens · Piccante",
-  description:
-    "Una nota piccante e decisa per le vostre creazioni culinarie. Coltivata in ambiente controllato per garantire standard qualitativi costanti tutto l'anno per cucine gourmet.",
-  shortDescription: "Microgreens piccanti, ideali per piatti signature.",
-  availabilityStatus: "IN_STOCK",
-  isAvailable: true,
-  images: [],
-  tags: [{ label: "Piccante" }, { label: "Biologico" }, { label: "Km0" }],
-  variant: {
-    variantId: "var-001",
-    skuVariant: "MIC-SEN-WAS-50",
-    activeVariant: true,
-    netWeight: 50,
-    unit: "GRAMS",
-    packagingType: {
-      packTypeId: "pack-001",
-      namePackType: "Vaschetta Standard",
-      unitOfMeasure: "TRAY",
-    },
-    technicalDeatils: {},
-  },
-  priceLists: [
-    { priceListId: "price-b2c", price: 345, clientCategory: "B2C" },
-    {
-      priceListId: "price-b2b",
-      price: 290,
-      minOrderQuantity: 10,
-      clientCategory: "B2B",
-    },
-  ],
-  vatRate: 0.04,
-  delivery: {
-    kind: "harvest",
-    expectedHarvest: new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000,
-    ).toISOString(),
-  },
-  subscriptionFrequencies: ["weekly", "biweekly", "monthly"],
-  rating: { score: 5, count: 48 },
-};
+type Props = { params: Promise<{ slug: string }> };
 
 function StarRating({ score, count }: { score: number; count: number }) {
   return (
@@ -75,27 +30,72 @@ function StarRating({ score, count }: { score: number; count: number }) {
   );
 }
 
-export default function ProductPage() {
-  const product = MOCK_PRODUCT;
+function formatPrice(cents: number) {
+  return `€ ${(cents / 100).toLocaleString("it-IT", { minimumFractionDigits: 2 })}`;
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
+
+  let product;
+  let relatedRaw: any[] = [];
+
+  try {
+    const [dto, related] = await Promise.all([
+      getProductDetail(slug),
+      getRelatedProducts(slug),
+    ]);
+    product = mapProductDetailToPageData(dto);
+    relatedRaw = related;
+  } catch {
+    notFound();
+  }
+
+  // Estrai technicalDetails dalla prima variante
+  const td = product.variants[0]?.technicalDetails ?? {};
+
+  // Costruisci WhyCards dagli attributi
+  const whyCards: WhyCard[] = [1, 2, 3, 4]
+    .map((n) => ({
+      title: String(td[`benefit_${n}_title`] ?? ""),
+      description: String(td[`benefit_${n}_text`] ?? ""),
+    }))
+    .filter((c) => c.title); // mostra solo le card compilate
+
+  // Costruisci HowItems dagli attributi
+  const howItems: HowItem[] = [1, 2, 3]
+    .map((n) => ({
+      title: String(td[`use_${n}_title`] ?? ""),
+      description: String(td[`use_${n}_text`] ?? ""),
+    }))
+    .filter((c) => c.title);
+
+  // Mappa prodotti correlati
+  const relatedProducts: RelatedProduct[] = relatedRaw.map((p) => ({
+    slug: p.productSlug,
+    name: p.productName,
+    description: p.shortProductDescription ?? "",
+    price: formatPrice(Number(p.price) * 100),
+    imageSrc: "", // aggiungi immagini quando disponibili
+    imageAlt: p.productName,
+  }));
+
+  const firstVariant = product.variants[0];
 
   return (
     <>
       <main className="navbar-offset pd-page">
         <div className="pd-inner">
-          {/* Colonna sinistra */}
           <div className="pd-left">
             <p className="eyebrow pd-eyebrow">{product.eyebrow}</p>
             <h1 className="pd-title">{product.name}</h1>
-
             {product.rating && (
               <StarRating
                 score={product.rating.score}
                 count={product.rating.count}
               />
             )}
-
             <p className="body-text pd-description">{product.description}</p>
-
             <div className="pd-gallery">
               <div className="pd-gallery-main">
                 <div className="pd-gallery-placeholder" />
@@ -106,28 +106,34 @@ export default function ProductPage() {
                 ))}
               </div>
             </div>
-
-            <div className="pd-tags">
-              {product.tags.map((tag) => (
-                <span key={tag.label} className="pd-tag">
-                  {tag.label}
-                </span>
-              ))}
-            </div>
+            {product.tags.length > 0 && (
+              <div className="pd-tags">
+                {product.tags.map((tag) => (
+                  <span key={tag.label} className="pd-tag">
+                    {tag.label}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-
-          {/* Colonna destra sticky */}
           <div className="pd-right">
-            <PricingBlock product={product} role="guest" />
+            <PricingBlock product={product} />
           </div>
         </div>
       </main>
 
-      {/* Sezioni sotto la hero prodotto */}
-      <ProductWhySection />
-      <ProductHowSection />
-      <ProductInfoSection />
-      <ProductPairingsSection />
+      {whyCards.length > 0 && <ProductWhySection cards={whyCards} />}
+      {howItems.length > 0 && (
+        <ProductHowSection items={howItems} imageSrc="" />
+      )}
+      {firstVariant && (
+        <ProductInfoSection
+          variant={firstVariant}
+          technicalDetails={td}
+          delivery={product.delivery}
+        />
+      )}
+      <ProductPairingsSection products={relatedProducts} />
     </>
   );
 }

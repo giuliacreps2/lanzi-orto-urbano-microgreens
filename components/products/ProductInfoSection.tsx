@@ -1,90 +1,123 @@
-/**
- * "Informazioni prodotto" — tab + coppie chiave/valore
- * Stile coerente con il resto del sito (no tabella HTML)
- */
-
 "use client";
 
 import { useState } from "react";
+import type { ProductPageData } from "@/types/product-types";
 
-type InfoEntry = { label: string; value: string };
-type Tab = { id: string; label: string; entries: InfoEntry[] };
+type Props = {
+  variant: ProductPageData["variants"][number];
+  technicalDetails: Record<string, unknown>;
+  delivery: ProductPageData["delivery"];
+};
 
-const TABS: Tab[] = [
-  {
-    id: "dettagli",
-    label: "Dettagli",
-    entries: [
-      { label: "Gusto", value: "Piccante, fresco, leggermente pungente." },
-      {
-        label: "Texture",
-        value: "Croccante e succosa, con foglioline tenere.",
-      },
-      {
-        label: "Colore",
-        value: "Verde brillante con steli e nervature porpora.",
-      },
-      { label: "Ricco di", value: "Vitamine A, C, K, folati e antiossidanti." },
-    ],
-  },
-  {
-    id: "conservazione",
-    label: "Conservazione",
-    entries: [
-      { label: "Temperatura", value: "Conservare tra 2°C e 6°C." },
-      { label: "Shelf life", value: "5 giorni dalla consegna." },
-      {
-        label: "Consigli",
-        value: "Non lavare prima dell'uso. Consumare entro la data indicata.",
-      },
-    ],
-  },
-  {
-    id: "formato",
-    label: "Formato",
-    entries: [
-      { label: "Peso netto", value: "50g" },
-      { label: "Confezionamento", value: "Vaschetta standard" },
-      { label: "SKU", value: "MIC-SEN-WAS-50" },
-    ],
-  },
-  {
-    id: "disponibilita",
-    label: "Disponibilità",
-    entries: [
-      { label: "Stato", value: "Disponibile su ordine" },
-      { label: "Consegna stimata", value: "7–10 giorni dalla semina" },
-      { label: "Zone coperte", value: "Tutta Italia" },
-    ],
-  },
-  {
-    id: "origine",
-    label: "Origine",
-    entries: [
-      { label: "Coltivazione", value: "Indoor, ambiente controllato" },
-      { label: "Sede", value: "Milano, Italia" },
-      { label: "Metodo", value: "Biologico, senza pesticidi" },
-    ],
-  },
-];
+export function ProductInfoSection({
+  variant,
+  technicalDetails,
+  delivery,
+}: Props) {
+  const [activeTab, setActiveTab] = useState("dettagli");
 
-export function ProductInfoSection() {
-  const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const deliveryText =
+    delivery.kind === "harvest"
+      ? `Raccolta stimata: ${new Date(delivery.expectedHarvest).toLocaleDateString("it-IT", { day: "2-digit", month: "long" })}`
+      : `Spedizione entro ${delivery.leadTimeHours}h`;
+
+  const TABS = [
+    {
+      id: "dettagli",
+      label: "Dettagli",
+      entries: [
+        {
+          label: "Gusto",
+          value: String(
+            technicalDetails["flavor"] ??
+              technicalDetails["taste_notes"] ??
+              "—",
+          ),
+        },
+        { label: "Texture", value: String(technicalDetails["texture"] ?? "—") },
+        { label: "Colore", value: String(technicalDetails["color"] ?? "—") },
+        {
+          label: "Ricco di",
+          value: String(technicalDetails["nutrients"] ?? "—"),
+        },
+      ],
+    },
+    {
+      id: "conservazione",
+      label: "Conservazione",
+      entries: [
+        {
+          label: "Temperatura",
+          value: technicalDetails["storage_temperature_c"]
+            ? `${technicalDetails["storage_temperature_c"]}°C`
+            : "—",
+        },
+        {
+          label: "Shelf life",
+          value: technicalDetails["shelf_life_days"]
+            ? `${technicalDetails["shelf_life_days"]} giorni dalla consegna`
+            : "—",
+        },
+        {
+          label: "Consigli",
+          value: String(technicalDetails["storage"] ?? "—"),
+        },
+      ],
+    },
+    {
+      id: "formato",
+      label: "Formato",
+      entries: [
+        {
+          label: "Peso netto",
+          value: `${variant.netWeight}${variant.unit === "GRAMS" ? "g" : variant.unit.toLowerCase()}`,
+        },
+        { label: "Confezionamento", value: variant.packagingType.namePackType },
+        { label: "SKU", value: variant.skuVariant },
+      ],
+    },
+    {
+      id: "disponibilita",
+      label: "Disponibilità",
+      entries: [
+        { label: "Stato", value: "Disponibile su ordine" },
+        { label: "Consegna stimata", value: deliveryText },
+        { label: "Zone coperte", value: "Tutta Italia" },
+      ],
+    },
+    {
+      id: "origine",
+      label: "Origine",
+      entries: [
+        {
+          label: "Coltivazione",
+          value: String(
+            technicalDetails["origin"] ?? "Indoor, ambiente controllato",
+          ),
+        },
+        { label: "Sede", value: "Milano, Italia" },
+        {
+          label: "Metodo",
+          value: String(
+            technicalDetails["certifications"] ?? "Biologico, senza pesticidi",
+          ),
+        },
+      ],
+    },
+  ];
+
   const current = TABS.find((t) => t.id === activeTab) ?? TABS[0];
 
   return (
     <section className="info-section">
       <div className="info-inner">
         <h3 className="info-heading">Informazioni prodotto</h3>
-
-        {/* Tab bar */}
         <div className="info-tabs" role="tablist">
           {TABS.map((tab) => (
             <button
               key={tab.id}
               role="tab"
               aria-selected={tab.id === activeTab}
-              aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={`info-tab ${tab.id === activeTab ? "info-tab--active" : "info-tab--idle"}`}
             >
@@ -92,13 +125,7 @@ export function ProductInfoSection() {
             </button>
           ))}
         </div>
-
-        {/* Contenuto tab */}
-        <div
-          id={`tabpanel-${current.id}`}
-          role="tabpanel"
-          className="info-entries"
-        >
+        <div role="tabpanel" className="info-entries">
           {current.entries.map((entry) => (
             <div key={entry.label} className="info-entry">
               <dt className="info-entry-label">{entry.label}</dt>

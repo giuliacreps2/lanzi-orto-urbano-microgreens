@@ -7,6 +7,9 @@ import {
   ProductDetailResponse,
 } from "@/types/product";
 
+import type { ProductDetailDTO } from "@/types/product-api-types";
+import type { ProductCatalogDTO } from "@/types/product-catalog-type";
+
 export type CreateProductPayload = {
   productName: string;
   productSlug: string;
@@ -35,7 +38,7 @@ export async function updateCompositeProduct(
   accessToken?: string | null,
 ) {
   return apiRequest<Product>(`/products/composite/${productId}`, {
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify(payload),
     accessToken,
   });
@@ -113,4 +116,37 @@ export async function getProducts(accessToken?: string | null) {
     method: "GET",
     accessToken,
   });
+}
+
+export async function getProductDetail(
+  slug: string,
+): Promise<ProductDetailDTO> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/products/${slug}/detail`,
+    { cache: "no-store" },
+  );
+
+  if (!res.ok) throw new Error("Prodotto non trovato");
+
+  return res.json();
+}
+
+export async function getRelatedProducts(
+  slug: string,
+): Promise<ProductCatalogDTO[]> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/products/${slug}/related`,
+    { cache: "no-store" },
+  );
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function getCatalog(): Promise<ProductCatalogDTO[]> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/products/catalog`,
+    { cache: "no-store" },
+  );
+  if (!res.ok) return [];
+  return res.json();
 }

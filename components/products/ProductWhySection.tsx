@@ -4,50 +4,18 @@
 
 import { Heart, Leaf, Zap, Sparkles } from "lucide-react";
 import type { ElementType } from "react";
+import type { WhyCard } from "@/types/product-types";
 
-type WhyCard = {
-  icon: ElementType;
-  title: string;
-  description: string;
-};
+const ICONS: ElementType[] = [Heart, Leaf, Zap, Sparkles];
 
-const WHY_CARDS: WhyCard[] = [
-  {
-    icon: Heart,
-    title: "Gusto deciso e rinfrescante",
-    description:
-      "Un tocco piccante che esalta ogni preparazione con leggerezza.",
-  },
-  {
-    icon: Leaf,
-    title: "Versatile e creativo",
-    description:
-      "Perfetto per insalate, panini, bowl e impiattamenti d'autore.",
-  },
-  {
-    icon: Zap,
-    title: "Freschezza assicurata",
-    description:
-      "Raccolto al momento giusto per offrirti il massimo del sapore e dei nutrienti.",
-  },
-  {
-    icon: Sparkles,
-    title: "Colore che fa la differenza",
-    description:
-      "Cuoricini porpora e steli rubino per piatti belli quanto buoni.",
-  },
-];
-
-export function ProductWhySection() {
+export function ProductWhySection({ cards }: { cards: WhyCard[] }) {
   return (
     <section className="why-section">
       <div className="why-inner">
         <h2 className="why-title">Perché ti piacerà</h2>
-
-        {/* Scroll orizzontale su mobile, griglia su desktop */}
         <div className="why-grid">
-          {WHY_CARDS.map((card) => {
-            const Icon = card.icon;
+          {cards.map((card, i) => {
+            const Icon = ICONS[i % ICONS.length];
             return (
               <article key={card.title} className="why-card">
                 <div className="why-icon-wrapper">
