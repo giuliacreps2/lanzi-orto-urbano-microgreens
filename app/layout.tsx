@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { AuthHydrator } from "@/components/AuthHydrator";
 import "./globals.css";
+import { Footer } from "@/components/Footer";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],

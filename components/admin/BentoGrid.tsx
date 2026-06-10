@@ -154,10 +154,13 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-gray-50 text-right">
-            <button className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-              Vai a gestione Vendite →
-            </button>
+          <div className="mt-4 pt-2.5 mb-2 border-t border-gray-50 text-right">
+            <a
+              href="/admin/orders"
+              className="text-xs font-semibold transition-colors rounded-full border border-spacing-5 p-3 hover:bg-gray-100"
+            >
+              Vai a gestione Ordini →
+            </a>
           </div>
         </div>
 
@@ -202,7 +205,7 @@ export default function AdminDashboard() {
               ))}
             </div>
           </div>
-          <button className="w-full mt-4 bg-emerald-50 hover:bg-emerald-100/80 text-emerald-700 text-xs py-2.5 rounded-xl font-semibold transition-colors">
+          <button className="w-full mt-4 hover:bg-gray-100 text-xs py-3 rounded-xl border font-semibold transition-colors">
             Gestisci Cicli di Raccolta
           </button>
         </div>
@@ -214,31 +217,21 @@ export default function AdminDashboard() {
               Preset Catalogo
             </h3>
             <p className="text-xs text-gray-400 leading-relaxed mb-4">
-              Configurazione rapida di nuove varianti prodotto basate sui preset
-              tipizzati di backend.
+              Configurazione rapida di nuove varianti prodotto.
             </p>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 pt-12">
               <div className="p-3 bg-green-50/60 rounded-xl border border-green-100 text-center hover:bg-green-50 transition-colors cursor-pointer">
                 <span className="text-xl">🌱</span>
                 <h4 className="text-xs font-bold text-green-800 mt-1">
                   Microgreens
                 </h4>
-                <p className="text-[10px] text-green-600 mt-0.5">
-                  Logica componenti
-                </p>
               </div>
               <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-100 text-center hover:bg-amber-50 transition-colors cursor-pointer">
                 <span className="text-xl">🍯</span>
                 <h4 className="text-xs font-bold text-amber-800 mt-1">Miele</h4>
-                <p className="text-[10px] text-amber-600 mt-0.5">
-                  Finished Goods
-                </p>
               </div>
             </div>
-          </div>
-          <div className="text-xs text-center text-gray-400 italic pt-2">
-            Architettura ERD fortemente tipizzata
           </div>
         </div>
 
@@ -295,7 +288,7 @@ export default function AdminDashboard() {
             <span className="text-gray-400">
               Punti fedeltà automatici attivi
             </span>
-            <button className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+            <button className="text-xs font-semibold transition-colors rounded-full border border-spacing-5 p-3 hover:bg-gray-100">
               Vedi pianificazione consegne →
             </button>
           </div>

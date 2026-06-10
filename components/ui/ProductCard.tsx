@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { Card } from "./Card";
-import type { Product } from "@/types/product";
 import { ProductCatalogDTO } from "@/types/product-catalog-type";
 
 type ProductCardProps = {
@@ -12,23 +11,30 @@ type ProductCardProps = {
 export function ProductCard({ product }: ProductCardProps) {
   const href = `/products/${product.productSlug}`;
 
-  const priceFormatted = `€ ${(Number(product.price) / 100).toLocaleString(
-    "it-IT",
-    {
-      minimumFractionDigits: 2,
-    },
-  )}`;
+  const priceFormatted = `€ ${Number(product.price).toLocaleString("it-IT", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 
   return (
     <Card className="min-w-55 rounded-sm bg-white md:min-w-0 overflow-hidden">
       <Link href={href} className="block">
-        <div className="relative aspect-[4/2.35] overflow-hidden ">
-          <Image
-            src={product.image.src}
-            alt={product.image.alt}
-            fill
-            className="object-cover transition duration-300 hover:scale-105"
-          />
+        <div className="relative aspect-[4/2.35] overflow-hidden bg-zinc-100">
+          {product.primaryImageUrl ? (
+            <Image
+              src={product.primaryImageUrl}
+              alt={product.primaryImageAlt ?? product.productName}
+              fill
+              className="object-cover transition duration-300 hover:scale-105"
+            />
+          ) : (
+            // Placeholder finché non ci sono immagini
+            <div className="absolute inset-0 bg-linear-to-br from-zinc-100 to-zinc-200 flex items-center justify-center">
+              <span className="text-xs text-zinc-400 font-medium">
+                {product.productName.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
       </Link>
 

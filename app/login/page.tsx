@@ -3,11 +3,13 @@ import { useAuthStore } from "@/types/store/authStore";
 import type { UserRole } from "@/types/store/authStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function FormLogin() {
   const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth); // ✅ TOP LEVEL, non dentro handleSubmit
+  const setAuth = useAuthStore((s) => s.setAuth);
 
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState("");
 
@@ -70,7 +72,7 @@ export default function FormLogin() {
       {/* COLONNA IMMAGINE */}
       <div className="hidden lg:block relative overflow-hidden">
         <img
-          src="/images/login-microgreens.jpg"
+          src="/Logo-Lanzi-Orto_Urbano-small.png"
           alt="Microgreens freschi coltivati da Lanzi Orto Urbano"
           className="h-full w-full object-cover"
         />
@@ -100,12 +102,12 @@ export default function FormLogin() {
         <div className="w-full max-w-md">
           <div className="mb-10">
             <img
-              src="/images/logo-lanzi.svg"
+              src="/Logo-Lanzi-Orto_Urbano-small.png"
               alt="Lanzi Orto Urbano"
               className="h-14 w-auto"
             />
 
-            <p className="mt-10 text-sm uppercase tracking-[0.22em] text-(--color-brand-green)">
+            <p className="mt-10 pt-10 text-sm uppercase tracking-[0.22em] text-(--color-brand-green)">
               Area riservata
             </p>
 
@@ -165,19 +167,35 @@ export default function FormLogin() {
                 </a>
               </div>
 
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className="mt-2 block w-full rounded-md border border-neutral-300 bg-white px-5 py-2 text-base text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-(--color-brand-green)"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="mt-2 block w-full rounded-md border border-neutral-300 bg-white px-5 py-2 pr-11 text-base text-neutral-950 outline-none transition placeholder:text-neutral-400 focus:border-(--color-brand-green)"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                  aria-label={
+                    showPassword ? "Nascondi password" : "Mostra password"
+                  }
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} strokeWidth={1.8} />
+                  ) : (
+                    <Eye size={18} strokeWidth={1.8} />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
@@ -188,7 +206,7 @@ export default function FormLogin() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-neutral-600">
+          <p className="mt-8 pt-4 text-center text-sm text-neutral-600">
             Non hai ancora un account?{" "}
             <a
               href="#"

@@ -206,6 +206,16 @@ video {
   border-color: var(--color-primary-dark);
 }
 
+.btn-admin {
+  border: 1.5px solid var(--color-brand-black);
+  background: var(--color-brand-black);
+  color: #fff;
+}
+.btn-admin:hover {
+  background: #151811e8;
+  border-color: #151811d2;
+}
+
 /* =========================
    HERO
 ========================= */

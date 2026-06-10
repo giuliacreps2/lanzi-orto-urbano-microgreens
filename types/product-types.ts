@@ -62,8 +62,7 @@ export type ProductPageData = {
 
   eyebrow: string;
 
-  /** Immagini (gestite separatamente, non nel backend attuale) */
-  images: { src: string; alt: string }[];
+  images: { src: string; alt: string; isPrimary?: boolean }[];
 
   /** Tag derivati da technicalDetails della variante */
   tags: { label: string }[];

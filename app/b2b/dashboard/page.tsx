@@ -143,6 +143,9 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<ProductCatalogDTO[]>([]);
   const [lastOrder, setLastOrder] = useState<OrderSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
     if (!token) return;
@@ -158,17 +161,19 @@ export default function DashboardPage() {
           fetch(`${API}/orders/my`, { headers }),
         ]);
 
-        // ✅ json() chiamato UNA sola volta
         if (profileRes.ok) {
           const profileData = await profileRes.json();
           setProfile(profileData);
           setCompanyName(profileData.companyName);
         }
+        setProfileLoading(false);
         if (catalogRes.ok) setProducts(await catalogRes.json());
+        setProductsLoading(false);
         if (ordersRes.ok) {
           const orders: OrderSummary[] = await ordersRes.json();
           if (orders.length > 0) setLastOrder(orders[0]);
         }
+        setOrdersLoading(false);
       } catch (err) {
         console.error("Errore caricamento dashboard:", err);
       } finally {
@@ -187,7 +192,6 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <>
-        <DashboardNavbar cartCount={0} />
         <div className="navbar-offset flex items-center justify-center min-h-screen">
           <p className="text-sm text-zinc-500">Caricamento dashboard...</p>
         </div>
@@ -197,17 +201,19 @@ export default function DashboardPage() {
 
   return (
     <>
-      <DashboardNavbar cartCount={0} />{" "}
-      {/* ✅ niente più props nome/iniziali */}
       <main className="navbar-offset db-page">
         <div className="db-container">
           {/* ── 1. HERO BAR ── */}
           <section className="db-hero-bar">
             <div className="db-hero-welcome">
               <div className="db-hero-welcome-top">
-                <h1 className="db-hero-name">
-                  Ciao, <span>{displayName}</span>
-                </h1>
+                {profileLoading ? (
+                  <div className="h-6 w-48 bg-zinc-100 rounded-lg animate-pulse" />
+                ) : (
+                  <h1 className="db-hero-name">
+                    Ciao, <span>{displayName}</span>
+                  </h1>
+                )}
                 <span className="db-b2b-badge">Cliente B2B</span>
               </div>
               <div className="db-hero-meta">
@@ -242,7 +248,7 @@ export default function DashboardPage() {
               </div>
 
               <div className="db-hero-actions">
-                <Button variant="primary" href="/products">
+                <Button className="btn-primary" href="/products">
                   <ShoppingCart size={15} /> Nuovo ordine
                 </Button>
               </div>
@@ -266,9 +272,8 @@ export default function DashboardPage() {
                 </p>
               </div>
               <Button
-                variant="brand"
                 href="/products/microgreen-rucola"
-                className="db-seasonal-cta"
+                className=" btn-brand db-seasonal-cta"
               >
                 Scopri il prodotto <ArrowRight size={15} />
               </Button>
@@ -289,7 +294,16 @@ export default function DashboardPage() {
                   </Link>
                 </div>
 
-                {products.length === 0 ? (
+                {productsLoading ? (
+                  <div className="space-y-3 p-4">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="h-10 bg-zinc-100 rounded-lg animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : products.length === 0 ? (
                   <p className="p-4 text-sm text-zinc-500">
                     Nessun prodotto disponibile.
                   </p>
@@ -370,7 +384,16 @@ export default function DashboardPage() {
                 <div className="db-card-header">
                   <h2 className="db-card-title">Riordino rapido</h2>
                 </div>
-                {lastOrder ? (
+                {ordersLoading ? (
+                  <div className="space-y-2 p-4">
+                    {[1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="h-6 bg-zinc-100 rounded animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : lastOrder ? (
                   <>
                     <p className="db-reorder-meta">
                       Ultimo ordine {lastOrder.orderNumber} del{" "}
@@ -406,15 +429,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Consulente dedicato — lasciamo fisso, è un contatto reale */}
-              <div className="db-card db-card--consultant">
+              <div className="db-card db-card--consultant mt-5">
                 <h2 className="db-card-title">Hai bisogno di aiuto?</h2>
                 <p className="db-consultant-sub">
                   Contatta il tuo referente dedicato.
                 </p>
                 <div className="db-consultant-profile">
-                  <div className="db-consultant-avatar" />
+                  <div className="db-consultant-avatar">
+                    <Image
+                      src="/customer-care-man.jpg"
+                      alt="Immagine del profilo"
+                      width={500}
+                      height={500}
+                    />
+                  </div>
                   <div>
-                    <p className="db-consultant-name">Marco Lanzi</p>
+                    <p className="db-consultant-name">Marco Bianchi</p>
                     <p className="db-consultant-role">Account Manager</p>
                   </div>
                 </div>
@@ -422,8 +452,8 @@ export default function DashboardPage() {
                   <a href="tel:+393401234567" className="db-contact-link">
                     <Phone size={13} /> +39 340 1234567
                   </a>
-                  <a href="mailto:marco@lanzi.it" className="db-contact-link">
-                    <Mail size={13} /> marco@lanzi.it
+                  <a href="mailto:marco@bianchi.it" className="db-contact-link">
+                    <Mail size={13} /> marco@bianchi.it
                   </a>
                 </div>
                 <a

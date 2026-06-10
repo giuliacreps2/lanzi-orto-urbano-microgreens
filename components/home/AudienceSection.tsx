@@ -17,14 +17,13 @@ export function AudienceSection({ content }: AudienceSectionProps) {
   return (
     <section className="bg-(--color-brand-beige) px-5 py-10 md:px-8 md:py-14 lg:px-12 lg:py-16">
       <div className="mx-auto max-w-7xl">
-        {/* h2 più grande degli h3 interni — gerarchia corretta */}
-        <h2 className="mx-auto mb-8 max-w-3xl section-title text-4xl leading-none tracking-[-0.03em] text-(--color-brand-black) md:mb-10 md:text-5xl">
+        <h2 className="mx-auto mb-8 max-w-3xl section-title pb-5 text-4xl leading-none tracking-[-0.03em] text-(--color-brand-black) md:mb-10 md:text-5xl">
           {content.title}
         </h2>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
-          {content.cards.map((card: any) => {
-            const Icon = audienceIcons[card.icon];
+          {content.cards.map((card) => {
+            const Icon = audienceIcons[card.icon as AudienceIcon];
 
             return (
               <article

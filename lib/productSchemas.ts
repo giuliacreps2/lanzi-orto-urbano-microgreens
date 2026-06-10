@@ -1,9 +1,3 @@
-import type {
-  AttributeType,
-  ProductCategoryMetadata,
-  Unit,
-} from "@/types/product";
-
 import type { AttributeType, ProductCategoryMetadata } from "@/types/product";
 
 export type CategoryPresetCode = "MICROGREENS" | "HONEY";

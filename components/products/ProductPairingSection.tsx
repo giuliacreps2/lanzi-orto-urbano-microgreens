@@ -28,17 +28,20 @@ export function ProductPairingsSection({
           {products.map((product) => (
             <article key={product.slug} className="pairing-card">
               <div className="pairing-card-image-wrapper">
-                <div className="pairing-card-image">
-                  {product.imageSrc && (
-                    <Image
-                      src={product.imageSrc}
-                      alt={product.imageAlt}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  )}
-                </div>
-                <div className="pairing-card-placeholder" aria-hidden="true" />
+                {product.imageSrc ? (
+                  <Image
+                    src={product.imageSrc}
+                    alt={product.imageAlt}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className="pairing-card-placeholder"
+                    aria-hidden="true"
+                  />
+                )}
+
                 <button
                   type="button"
                   aria-label={`Aggiungi ${product.name} al carrello`}
@@ -47,6 +50,7 @@ export function ProductPairingsSection({
                   <Plus size={16} strokeWidth={2.2} />
                 </button>
               </div>
+
               <div className="pairing-card-body">
                 <Link
                   href={`/products/${product.slug}`}

@@ -47,7 +47,7 @@ export default function AdminProductsPage() {
         title="Prodotti"
         description="Gestisci catalogo, categorie, varianti, immagini e disponibilità."
         action={
-          <Button href="/admin/products/new" variant="admin">
+          <Button href="/admin/products/new" className="btn-admin">
             <PlusIcon className="size-4" />
             Nuovo Prodotto
           </Button>

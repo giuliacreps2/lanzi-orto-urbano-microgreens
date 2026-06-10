@@ -1,5 +1,3 @@
-import { Unit } from "./product";
-
 export type ProductCatalogDTO = {
   productId: string;
   variantId: string;
@@ -15,4 +13,6 @@ export type ProductCatalogDTO = {
   minOrderQuantity: number;
   productIsAvailable: boolean;
   activeVariant: boolean;
+  primaryImageUrl?: string | null;
+  primaryImageAlt?: string | null;
 };

@@ -29,7 +29,11 @@ import type {
 
 type CloudinaryUploadProps = {
   images: ProductImagePayload[];
-  onChange: (images: ProductImagePayload[]) => void;
+  onChange: (
+    images:
+      | ProductImagePayload[]
+      | ((prev: ProductImagePayload[]) => ProductImagePayload[]),
+  ) => void;
 };
 
 type ProductFormProps = {
@@ -600,7 +604,16 @@ export default function ProductCreateForm({
           </div>
 
           <div className="mt-5">
-            <CloudinaryUpload images={images} onChange={setImages} />
+            <CloudinaryUpload
+              images={images}
+              onChange={(updater) => {
+                if (typeof updater === "function") {
+                  setImages((prev) => updater(prev));
+                } else {
+                  setImages(updater);
+                }
+              }}
+            />
           </div>
         </section>
 

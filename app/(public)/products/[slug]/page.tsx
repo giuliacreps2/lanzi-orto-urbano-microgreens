@@ -8,6 +8,8 @@ import { ProductPairingsSection } from "@/components/products/ProductPairingSect
 import { Star } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { WhyCard, HowItem, RelatedProduct } from "@/types/product-types";
+import Image from "next/image";
+import { ProductGallery } from "@/components/admin/products/ProductGallery";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -76,8 +78,8 @@ export default async function ProductPage({ params }: Props) {
     name: p.productName,
     description: p.shortProductDescription ?? "",
     price: formatPrice(Number(p.price) * 100),
-    imageSrc: "", // aggiungi immagini quando disponibili
-    imageAlt: p.productName,
+    imageSrc: p.primaryImageUrl ?? "",
+    imageAlt: p.primaryImageAlt ?? p.productName,
   }));
 
   const firstVariant = product.variants[0];
@@ -96,16 +98,11 @@ export default async function ProductPage({ params }: Props) {
               />
             )}
             <p className="body-text pd-description">{product.description}</p>
-            <div className="pd-gallery">
-              <div className="pd-gallery-main">
-                <div className="pd-gallery-placeholder" />
-              </div>
-              <div className="pd-gallery-thumbs">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="pd-gallery-thumb" />
-                ))}
-              </div>
-            </div>
+            {/* Galleria */}
+            <ProductGallery
+              images={product.images}
+              productName={product.name}
+            />
             {product.tags.length > 0 && (
               <div className="pd-tags">
                 {product.tags.map((tag) => (
@@ -124,7 +121,11 @@ export default async function ProductPage({ params }: Props) {
 
       {whyCards.length > 0 && <ProductWhySection cards={whyCards} />}
       {howItems.length > 0 && (
-        <ProductHowSection items={howItems} imageSrc="" />
+        <ProductHowSection
+          items={howItems}
+          imageSrc="/hamburger-microgreens.jpg"
+          imageAlt={product.name}
+        />
       )}
       {firstVariant && (
         <ProductInfoSection

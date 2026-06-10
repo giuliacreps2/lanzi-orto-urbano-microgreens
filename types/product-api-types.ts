@@ -28,7 +28,15 @@ export type PriceInfoDTO = {
   clientCategory: "B2B" | "B2C";
 };
 
+export type ProductImageDTO = {
+  urlImage: string;
+  altText: string;
+  isPrimary: boolean;
+  sortOrder: number;
+};
+
 export type ProductDetailDTO = {
   product: ProductInfoDTO;
   variant: VariantInfoDTO[];
+  images: ProductImageDTO[];
 };

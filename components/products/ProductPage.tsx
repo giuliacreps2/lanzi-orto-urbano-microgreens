@@ -84,8 +84,8 @@ function mapToPageData(raw: RawProductResponse): ProductPageData {
     : { kind: "stock", leadTimeHours: 48 };
 
   // Tag da technicalDetails della variante
-  const tags = raw.variant.technicalDetails
-    ? Object.entries(raw.variant.technicalDetails)
+  const tags = raw.variants.technicalDetails
+    ? Object.entries(raw.variants.technicalDetails)
         .filter(([, v]) => typeof v === "string" && v.length < 30)
         .map(([, v]) => ({ label: String(v) }))
     : [];
@@ -101,7 +101,7 @@ function mapToPageData(raw: RawProductResponse): ProductPageData {
     eyebrow: raw.product.productCategory?.nameProdCategory ?? "",
     images: [], // TODO: collegare bucket immagini
     tags,
-    variant: raw.variant,
+    variant: raw.variants,
     priceLists: raw.priceLists,
     vatRate,
     delivery,

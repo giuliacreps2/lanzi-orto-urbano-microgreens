@@ -13,7 +13,6 @@ export function mapProductDetailToPageData(
     shortDescription: dto.product.shortProductDescription,
     availabilityStatus: dto.product.isAvailable ? "IN_STOCK" : "OUT_OF_STOCK",
     isAvailable: dto.product.isAvailable,
-    images: [],
     tags: [],
     variants: (
       (dto as any).variants ??
@@ -46,5 +45,11 @@ export function mapProductDetailToPageData(
     },
     subscriptionFrequencies: ["weekly", "biweekly", "monthly"],
     rating: undefined,
+    images:
+      dto.images?.map((img) => ({
+        src: img.urlImage,
+        alt: img.altText,
+        isPrimary: img.isPrimary,
+      })) ?? [],
   };
 }

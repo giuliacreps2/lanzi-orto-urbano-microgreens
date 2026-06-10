@@ -1,11 +1,16 @@
 import { BellIcon, MenuIcon, SearchIcon } from "lucide-react";
 import { AvatarButton } from "@/components/ui/avatar";
+import Image from "next/image";
 
 type AdminTopbarProps = {
   onOpenMobileSidebar: () => void;
 };
 
 export default function AdminTopbar({ onOpenMobileSidebar }: AdminTopbarProps) {
+  const handleAvatarClick = () => {
+    console.log("Avatar cliccato!");
+  };
+
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/90 backdrop-blur">
       <div className="flex h-16 items-center gap-4 px-4 sm:px-6 lg:px-8">
@@ -33,11 +38,19 @@ export default function AdminTopbar({ onOpenMobileSidebar }: AdminTopbarProps) {
             <span className="absolute right-2 top-2 size-2 rounded-full bg-red-500" />
           </button>
 
-          <AvatarButton
-            square
-            initials="A"
-            className="size-10 bg-zinc-950 text-white"
-          />
+          <button
+            onClick={handleAvatarClick}
+            className="rounded-full overflow-hidden border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            style={{ width: "48px", height: "48px" }}
+          >
+            <Image
+              src="/customer-care-man.jpg"
+              alt="Avatar dell'utente"
+              width={48}
+              height={48}
+              className="object-cover"
+            />
+          </button>
         </div>
       </div>
     </header>

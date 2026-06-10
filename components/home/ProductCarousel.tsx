@@ -1,11 +1,11 @@
+import { ProductCatalogDTO } from "@/types/product-catalog-type";
 import { Button } from "../ui/button";
 import { ProductCard } from "../ui/ProductCard";
-import type { Product } from "@/types/product";
 
 type ProductCarouselProps = {
   title: string;
   description: string;
-  products: Product[];
+  products: ProductCatalogDTO[];
 };
 
 export function ProductCarousel({
@@ -33,8 +33,8 @@ export function ProductCarousel({
         </div>
 
         <div className="-mx-5 flex gap-4 overflow-x-auto px-5 pb-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-5">
-          {products.map((product) => (
-            <ProductCard key={product.productId} product={product} />
+          {products.slice(3, 8).map((product) => (
+            <ProductCard key={product.productId} product={product as any} />
           ))}
         </div>
       </div>
